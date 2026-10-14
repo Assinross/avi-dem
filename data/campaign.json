@@ -289,7 +289,7 @@
      "x": 0.795,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_trsn"
+     "monster": "m_pale_watch"
     },
     {
      "id": "gate",
@@ -406,7 +406,7 @@
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_tiqn"
+     "monster": "m_pale_reaper"
     },
     {
      "id": "gate",
@@ -493,7 +493,7 @@
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_wlwd"
+     "monster": "m_pale_knight"
     },
     {
      "id": "r1",
@@ -621,7 +621,7 @@
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_moti"
+     "monster": "m_pale_choir"
     },
     {
      "id": "b6",

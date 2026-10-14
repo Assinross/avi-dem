@@ -95,11 +95,17 @@
     return {
       seed: run.seed + run.chapter * 101 + nodeId.length * 7 + run.stats.wins * 13 + run.stats.losses,
       players: [
-        { name: run.heroName, element: run.element, level: run.level, deck: run.deck.slice(), skills: run.skills },
+        { name: run.heroName, element: run.element, level: run.level, deck: run.deck.slice(), skills: run.skills,
+          art: 'heroes/' + data.races[run.element].faction },
         { name: m.name + (n.type === 'gate' ? ' (страж)' : ''), element: m.element, level: m.level, hp: v.hp,
-          deck: v.deck.slice(), skills: v.skills, passives: n.boss || [], avatar: m.avatar }
+          deck: v.deck.slice(), skills: v.skills, passives: n.boss || [], art: monsterArt(m) }
       ]
     };
+  }
+
+  function monsterArt(m) {
+    var c = m.avatar && data.cards.filter(function (x) { return x.id === m.avatar; })[0];
+    return c ? c.art : null;
   }
 
   // ---------- Награды ----------

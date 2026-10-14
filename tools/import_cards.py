@@ -70,7 +70,7 @@ def main():
                 elif k not in kw:
                     kw.append(k)
             card['keywords'] = kw
-        for k in ('target', 'targetFilter', 'attach', 'xCost', 'sacrifice', 'blockPhase', 'release'):
+        for k in ('target', 'targetFilter', 'attach', 'xCost', 'sacrifice', 'blockPhase', 'release', 'entersPale', 'buryOnRemove'):
             if k in spec:
                 card[k] = spec[k]
         abilities = spec.get('ab', [])

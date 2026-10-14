@@ -24,6 +24,19 @@ NAMES = {
     ('MYHO', 5): 'Старый буравчик', ('OGKN', 7): 'Вождь исполинов',
 }
 
+# Монстры-Иные (своих в оригинале нет): заменяют побочный бой того же уровня, здоровье и навыки - от заменяемого.
+# Колода на сложности d = base + extra[:d].
+PALE_MONSTERS = {
+    'm_pale_watch': {'name': 'Бледный дозор', 'replaces': 'm_trsn', 'avatar': 'smfx',
+                     'base': ['smfx', 'smfx', 'smtg', 'smtg', 'ous2', 'obls', 'alns'], 'extra': ['smtg', 'ous3', 'obls', 'oue1']},
+    'm_pale_reaper': {'name': 'Бледная жатва', 'replaces': 'm_tiqn', 'avatar': 'oud2',
+                      'base': ['oud1', 'oud2', 'oud2', 'smtg', 'ous1', 'ous3', 'orpl'], 'extra': ['smwb', 'oud1', 'oflx', 'prwr']},
+    'm_pale_knight': {'name': 'Бледный орден', 'replaces': 'm_wlwd', 'avatar': 'smwb',
+                      'base': ['smwb', 'smtg', 'smfx', 'oue1', 'oclv', 'osj1'], 'extra': ['osj1', 'prgd', 'orpl', 'smtg']},
+    'm_pale_choir': {'name': 'Хор Иных', 'replaces': 'm_moti', 'avatar': 'oud3',
+                     'base': ['oud3', 'smwb', 'oud2', 'osj2', 'osj2', 'ous3', 'orft', 'omsw'], 'extra': ['osj3', 'lswr', 'smwb', 'oue3']},
+}
+
 SKILLS = {'HEAL', 'REGN', 'CONC'}
 
 STARTER = {'chaos': 'STR1', 'life': 'STG1', 'movement': 'STU1', 'synthesis': 'STB1'}
@@ -79,6 +92,13 @@ def main():
             'level': base['Level'],
             'avatar': avatar['id'] if avatar else None,
             'variants': out,
+        }
+    for mid, pm in PALE_MONSTERS.items():
+        src = monsters[pm['replaces']]
+        monsters[mid] = {
+            'name': pm['name'], 'element': 'white', 'level': src['level'], 'avatar': pm['avatar'],
+            'variants': [{'hp': v['hp'], 'deck': pm['base'] + pm['extra'][:d], 'skills': v['skills']}
+                         for d, v in enumerate(src['variants'])],
         }
     with open('data/monsters.json', 'w', encoding='utf-8') as f:
         f.write('{\n' + ',\n'.join('  ' + json.dumps(k) + ': ' + json.dumps(v, ensure_ascii=False)

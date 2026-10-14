@@ -219,8 +219,9 @@
     B().start(stage, cfg, {
       seed: Date.now(),
       players: [
-        { name: cfg.races[el].hero, element: el, level: 5, deck: cfg.races[el].starter.slice() },
-        { name: m.name, element: m.element, level: m.level, hp: v.hp, deck: v.deck.slice(), skills: v.skills }
+        { name: cfg.races[el].hero, element: el, level: 5, deck: cfg.races[el].starter.slice(), art: 'heroes/' + cfg.races[el].faction },
+        { name: m.name, element: m.element, level: m.level, hp: v.hp, deck: v.deck.slice(), skills: v.skills,
+          art: m.avatar ? AD.Engine.cardDef(m.avatar).art : null }
       ]
     }, function () { show('menu'); });
   }

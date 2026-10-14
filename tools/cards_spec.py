@@ -680,3 +680,106 @@ EXTRA_CARDS = [
      'abilities': [T('endOfTurn', 'damage', 'enchantedHero', 1, whose='each')],
      'text': 'Герой получает 1 урон в конце каждого хода.', 'art': 'cards/snake_venom', 'focus': [0.5, 0.4]},
 ]
+
+# ================= ДОРАБОТКА: оставшиеся карты (аспекты, контроль) =================
+# Аспекты (по текстам оригинала, решения в docs/rules.md): проявленное бледное существо - обычное;
+# в бледном аспекте не атакует, не блокирует, не видно обычной магии. Рассеяться - отдых.
+DISS = A('dissipate', 'self', cost=R)
+FAREWELL = A('draw', 'ownHero', 1, dict(ether=1, sacrificeSelf=True))
+MAN_SAC = A('manifest', 'self', cost=dict(sacrifice=True), aspect='pale')
+MAN_CH = A('manifest', 'self', cost=dict(channel=1), aspect='pale')
+MAN_GRAVE = [A('exileGrave', 'anyGraveCreature', aspect='pale'), A('manifest', 'self', linked=True)]
+MAN_ENCH = [A('destroyEnchantment', 'enchantment', aspect='pale'), A('manifest', 'self', linked=True)]
+PALE_ANY = {'keyword': 'pale', 'aspect': 'any'}
+
+SPEC.update({
+    # ---- карты фракций ----
+    'WLIL': cr('Голографическая стена', 'wall', '1 эфир: здоровье становится 1 + число существ в вашем могильнике.',
+               [A('setBaseHp', 'self', {'count': 'ownGraveyard', 'add': 1}, ether(1))]),
+    'QKFX': en('Наскоро', 'Вернуть существо из любого могильника в игру под вашим началом с -1/-1. Снимут чары - существо погибнет, погибнет существо - чары вернутся в руку.',
+               [ST('enchanted', atk=-1, hp=-1), T('onEnchantedDeath', 'returnSelfToHand')],
+               target='anyGraveCreature', buryOnRemove=True),
+    'CHCM': en('Смена власти', 'Вы получаете контроль над существом, пока чары действуют.',
+               [P('gainControl', 'chosen'), ST('enchanted', controlSteal=True)]),
+    'MTPT': cr('Серпень-патриарх', 'mantis',
+               'Отдых, X эфира (X - число существ врага той же породы, что выбранное): усыпить их всех. Не в фазе блока.',
+               [A('rest', 'enemyCreature', cost=dict(rest=True, notInBlock=True,
+                  ether={'count': 'enemy', 'filter': {'sameRaceAsTarget': True}})),
+                A('rest', 'allEnemyCreatures', filter={'sameRaceAsTarget': True}, linked=True)]),
+    'RDCM': en('Повеление', 'Вы навсегда получаете контроль над существом.', [P('gainControl', 'chosen')]),
+
+    # ---- Иные: существа ----
+    'OSJ1': cr('Бледный мститель', 'pale', 'Входит рассеянным. Когда любой герой колдует, проявляется 3/3. Отдых: рассеяться. 1 эфир, жертва себя: взять карту.',
+               [T('onCast', 'manifestAs', 'self', 3, by='any', condition={'castType': 'sorcery'}), DISS, FAREWELL], entersPale=True),
+    'OSJ2': cr('Бледный призрак', 'pale', 'Входит рассеянным. Когда любой герой колдует, проявляется X/X, X - стоимость колдовства. Отдых: рассеяться. 1 эфир, жертва себя: взять карту.',
+               [T('onCast', 'manifestAs', 'self', 'castCost', by='any', condition={'castType': 'sorcery'}), DISS, FAREWELL], entersPale=True),
+    'OSJ3': cr('Бледный искупитель', 'pale', 'Входит рассеянным. Когда враг колдует с доплатой X, проявляется со стороной, равной потраченному эфиру. Отдых: рассеяться. 1 эфир, жертва себя: взять карту.',
+               [T('onCast', 'manifestAs', 'self', 'castEther', by='enemy', condition={'castType': 'sorcery', 'castXCost': True}), DISS, FAREWELL],
+               entersPale=True),
+    'OUE2': cr('Бледный ткач', 'pale', 'Отдых: рассеяться. Проявиться: уничтожить чары. Отдых, 1 эфир: копия чар в руку.',
+               [DISS] + MAN_ENCH + [A('copyEnchantToHand', 'enchantment', cost=dict(rest=True, ether=1))]),
+    'OUE3': cr('Бледный перевёртыш', 'pale', 'Отдых: рассеяться. Проявиться: уничтожить чары. Отдых, 1 эфир: забрать чары себе в руку.',
+               [DISS] + MAN_ENCH + [A('copyEnchantToHand', 'enchantment', cost=dict(rest=True, ether=1)),
+                                    A('destroyEnchantment', 'enchantment', linked=True)]),
+    'OUE1': cr('Бледный пожиратель чар', 'pale', 'Отдых: рассеяться. Проявиться: уничтожить чары. Отдых, 1 эфир: уничтожить чары и навсегда получить +1/+1.',
+               [DISS] + MAN_ENCH + [A('destroyEnchantment', 'enchantment', cost=dict(rest=True, ether=1)),
+                                    A('permBuff', 'self', linked=True, atk=1, hp=1)]),
+    'SMFX': cr('Бледный солдат', 'pale', 'Отдых: рассеяться. Проявиться: убрать существо из любого могильника.', [DISS] + MAN_GRAVE),
+    'SMTG': cr('Бледный фанатик', 'pale', 'Отдых: рассеяться. Проявиться: убрать существо из любого могильника.', [DISS] + MAN_GRAVE),
+    'SMWB': cr('Бледный рыцарь', 'pale', 'Отдых: рассеяться. Проявиться: убрать существо из любого могильника.', [DISS] + MAN_GRAVE,
+               kw=['lifetap']),
+    'OUS1': cr('Бледный проводник', 'pale', 'Отдых: рассеяться. Проявиться: жертва существа. Отдых: +2 эфира.',
+               [DISS, MAN_SAC, A('gainEther', 'ownHero', 2, R)]),
+    'OUS2': cr('Бледный заклинатель', 'pale', 'Отдых: рассеяться. Проявиться: жертва существа. Отдых: сжечь до 3 эфира врага и нанести ему столько урона.',
+               [DISS, MAN_SAC, A('burnEther', 'enemyHero', 3, R)]),
+    'OUS3': cr('Бледный целитель', 'pale', 'Отдых: рассеяться. Проявиться: жертва существа. Отдых: забрать до 5 эфира врага и получить столько жизни.',
+               [DISS, MAN_SAC, A('drainEther', 'enemyHero', 5, R)]),
+    'OUD1': cr('Бледный бич', 'pale', 'Отдых: рассеяться. Проявиться: эфирный канал. Отдых, 2 эфира: уничтожить существо слабее по силе, жизнь по его здоровью, навсегда +1/+1.',
+               [DISS, MAN_CH, A('destroy', 'creature', cost=dict(rest=True, ether=2), filter={'ltSourceAtk': True}),
+                A('heal', 'ownHero', 'targetToughness', linked=True), A('permBuff', 'self', linked=True, atk=1, hp=1)]),
+    'OUD2': cr('Бледный жнец', 'pale', 'Отдых: рассеяться. Проявиться: эфирный канал. Отдых, 2 эфира: уничтожить существо слабее по здоровью, жизнь по его силе, навсегда +1/+1.',
+               [DISS, MAN_CH, A('destroy', 'creature', cost=dict(rest=True, ether=2), filter={'ltSourceHp': True}),
+                A('heal', 'ownHero', 'targetPower', linked=True), A('permBuff', 'self', linked=True, atk=1, hp=1)]),
+    'OUD3': cr('Бледный палач', 'pale', 'Отдых: рассеяться. Проявиться: эфирный канал. Отдых, 3 эфира: уничтожить существо слабее по силе и здоровью, +1 эфирный канал.',
+               [DISS, MAN_CH, A('destroy', 'creature', cost=dict(rest=True, ether=3), filter={'ltSourceAtk': True, 'ltSourceHp': True}),
+                A('gainChannels', 'ownHero', 1, linked=True)]),
+
+    # ---- Иные: чары ----
+    'PRWR': en('Страж аспектов', 'Смена аспекта существ этого героя стоит 1 эфир и 1 жизнь.',
+               [ST('holderHero', aspectTax=True)], attach='hero', target='hero'),
+    'PRWT': en('Бледность', 'Бледные существа входят в игру рассеянными.', [ST('allHeroes', enterPale=True)], attach='hero'),
+    'ALNS': en('Метка бледных', 'Существо получает +1/+1 за каждое бледное существо врага.',
+               [ST('enchanted', atk={'count': 'enemy', 'filter': {'keyword': 'pale'}}, hp={'count': 'enemy', 'filter': {'keyword': 'pale'}})]),
+    'OCRP': en('Увечье', 'Бледное существо не встаёт и защищено от магии. Враг его хозяина берёт лишнюю карту в начале хода.',
+               [ST('enchanted', keywords=['noUntap', 'untargetable']),
+                T('startOfTurn', 'draw', 'activeHero', 1, whose='each', condition={'activeNotEnchantedOwner': True})],
+               targetFilter=PALE_ANY),
+    'OEXC': en('Перенос аспектов', 'Раз в ход, 1 эфир: бледное существо меняет аспект.',
+               [A('toggleAspect', 'creature', cost=ether(1, once=True), filter=PALE_ANY)], attach='hero'),
+    'PLWP': en('Бледное искажение', 'В начале каждого хода гибнет самое хрупкое бледное существо. Нет бледных - чары исчезают.',
+               [T('startOfTurn', 'paleWarp', 'ownHero', whose='each')], attach='hero'),
+    'PRBN': en('Замок аспекта', 'Бледное существо не меняет аспект.', [ST('enchanted', noAspectChange=True)], targetFilter=PALE_ANY),
+    'PRGD': en('Маяк', 'Когда существо проявляется, проявляются все ваши существа его породы.', [ST('enchanted', beacon=True)],
+               targetFilter=PALE_ANY),
+
+    # ---- Иные: колдовство ----
+    'BNSH': so('Рассеивание', 'Проявленное бледное существо рассеивается. Взять карту.',
+               [P('dissipate', 'chosen'), P('draw', 'ownHero', 1)], target='creature', targetFilter={'keyword': 'pale'}),
+    'OBLS': so('Вспышка', '3 урона бледному существу (в любом аспекте) или 1 урон обычному. Взять карту.',
+               [P('paleBlast', 'chosen'), P('draw', 'ownHero', 1)], target='creature', targetFilter={'aspect': 'any'}),
+    'GIFT': so('Дар', 'Отдать своё существо врагу.', [P('giveControl', 'chosen')], target='friendlyCreature'),
+    'OFLX': so('Поток', 'Каждое рассеянное существо получает урон, равный числу проявленных существ.',
+               [P('damage', 'allCreatures', {'count': 'all', 'filter': {'aspect': 'bright'}}, filter={'aspect': 'pale'})]),
+    'OMWP': so('Бледное бедствие', 'Каждый герой сбрасывает по карте за каждое своё рассеянное существо.',
+               [P('discard', 'bothHeroes', {'count': 'targetPaleAspect'})]),
+    'GBNS': so('Испарение', 'Все бледные существа рассеиваются.', [P('dissipate', 'allCreatures', filter={'keyword': 'pale'})]),
+    'OCLV': so('Рассечение', 'Уничтожить существо. Бледное - враг получает урон по его силе, обычное - его хозяин получает жизнь по силе и здоровью.',
+               [P('cleave', 'chosen')], target='creature'),
+    'ORFT': so('Бледное возрождение', 'Уничтожить рассеянное существо и вернуть его в игру под вашим началом.',
+               [P('reclaim', 'chosen')], target='creature', targetFilter={'aspect': 'pale'}),
+    'ORPL': so('Рябь', '3 урона каждому рассеянному существу, ваши существа получают +1/+1 до конца хода.',
+               [P('damage', 'allCreatures', 3, filter={'aspect': 'pale'}), P('buff', 'allFriendlyCreatures', atk=1, hp=1)]),
+    'PLSL': so('Печать', 'До конца хода аспекты не меняются.', [P('aspectLock', 'ownHero')]),
+    'OMSW': so('Бледная кража', 'Каждый герой сбрасывает по карте за каждую породу своих бледных, враг берёт столько же.',
+               [P('paleTheft', 'ownHero')]),
+})

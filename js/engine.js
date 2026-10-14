@@ -82,7 +82,7 @@
       var hp = o.hp || heroHp(level);
       if (skills.HEAL) hp = Math.round(hp * (1 + 0.1 * skills.HEAL));
       state.players.push({
-        name: o.name, element: o.element || null, level: level,
+        name: o.name, element: o.element || null, level: level, art: o.art || null,
         hp: hp, maxHp: hp,
         channels: 0, bonusChannels: 0, ether: 0, turns: 0, extraDraw: 0, flags: {},
         passives: (o.passives || []).concat(skillPassives(skills)),
@@ -239,19 +239,23 @@
 
   // Модификаторы героя pIdx от постоянных свойств: лимит атаки, налог, каналы и т.п.
   function heroMods(state, pIdx) {
-    var m = { attackLimit: 0, attackTax: 0, channels: 0, noEtherGain: false, etherThorns: false };
+    var m = { attackLimit: 0, attackTax: 0, channels: 0, noEtherGain: false, etherThorns: false, aspectTax: false, enterPale: false };
     sources(state).forEach(function (src) {
+      if (src.unit && src.unit.pale) return;
       src.def.abilities.forEach(function (ab) {
         if (ab.trigger !== 'static') return;
         var applies = ab.scope === 'allHeroes' ||
           (ab.scope === 'ownHero' && src.controller === pIdx) ||
-          (ab.scope === 'enemyHero' && src.controller !== pIdx);
+          (ab.scope === 'enemyHero' && src.controller !== pIdx) ||
+          (ab.scope === 'holderHero' && src.holder === pIdx);
         if (!applies) return;
         if (ab.attackLimit) m.attackLimit = Math.max(m.attackLimit, ab.attackLimit);
         if (ab.attackTax) m.attackTax += ab.attackTax;
         if (ab.channels) m.channels += ab.channels;
         if (ab.noEtherGain) m.noEtherGain = true;
         if (ab.etherThorns) m.etherThorns = true;
+        if (ab.aspectTax) m.aspectTax = true;
+        if (ab.enterPale) m.enterPale = true;
       });
     });
     return m;
@@ -317,6 +321,7 @@
     state.players[state.active].ether = 0;
     state.combat = null;
     state.fog = false;
+    state.aspectLock = false;
     if (state.winner !== null) return;
     state.active = 1 - state.active;
     startTurn(state);
@@ -334,7 +339,7 @@
     return null;
   }
 
-  var FLAG_KEYS = ['noRegen', 'noHeal', 'noAbilities', 'redirectHero', 'absorbOnce', 'enterRested'];
+  var FLAG_KEYS = ['noRegen', 'noHeal', 'noAbilities', 'redirectHero', 'absorbOnce', 'enterRested', 'noAspectChange', 'beacon', 'controlSteal'];
 
   // Текущие сила, здоровье (максимум), ключевые слова и флаги с учётом всех модификаторов
   function stats(state, unit) {
@@ -346,6 +351,7 @@
     function val(v, e) {
       if (v === 'X') return e && e.x || 0;
       if (v === 'basePower') return def.atk || 0;
+      if (v && typeof v === 'object') return Ef().amount(state, e ? e.owner : unit.owner, v, { controller: e ? e.owner : unit.owner });
       return v || 0;
     }
     function apply(ab, e) {
@@ -366,6 +372,7 @@
       });
     });
     sources(state).forEach(function (src) {
+      if (src.unit && src.unit.pale) return;
       src.def.abilities.forEach(function (ab) {
         if (ab.trigger !== 'static' || ab.scope === 'enchanted') return;
         if (!Ef().scopeApplies(state, ab, src.controller, unit, src.ench && { hostUid: src.enchantedUid })) return;
@@ -402,6 +409,7 @@
     u.sick = !kw.haste;
     state.players[pIdx].field.push(u);
     if (stats(state, u).flags.enterRested) u.rested = true;
+    if (kw.pale && (def.entersPale || heroMods(state, pIdx).enterPale)) u.pale = true;
     log(state, def.name + ' входит в игру (' + state.players[pIdx].name + ').');
     def.abilities.forEach(function (ab) {
       if (ab.trigger === 'onEnter') Ef().run(state, pIdx, def, ab, { sourceName: def.name, sourceUid: u.uid, controller: pIdx });
@@ -415,6 +423,42 @@
     state.players[holder].enchants.push(e);
     log(state, 'Чары "' + cardDef(id).name + '" на герое ' + state.players[holder].name + '.');
     return e;
+  }
+
+  // ---------- Аспекты и контроль ----------
+
+  // Сменить аспект бледного существа. force - без проверок (проявление от колдовства)
+  function setAspect(state, u, pale, force) {
+    if (!!u.pale === pale) return true;
+    var st = stats(state, u);
+    if (!st.kw.pale) return false;
+    if (!force && (state.aspectLock || st.flags.noAspectChange)) { log(state, cardDef(u.id).name + ': аспект не меняется.'); return false; }
+    if (!force && heroMods(state, u.owner).aspectTax) {
+      var p = state.players[u.owner];
+      if (p.ether < 1 || p.hp <= 1) { log(state, cardDef(u.id).name + ': нечем оплатить смену аспекта.'); return false; }
+      pay(state, u.owner, 1, 1);
+    }
+    u.pale = pale;
+    log(state, cardDef(u.id).name + (pale ? ' рассеивается.' : ' проявляется.'));
+    if (!pale && st.flags.beacon) {
+      state.players[u.owner].field.forEach(function (o) {
+        if (o.pale && cardDef(o.id).race === cardDef(u.id).race) setAspect(state, o, false, true);
+      });
+    }
+    return true;
+  }
+
+  // Существо переходит под начало игрока to
+  function changeControl(state, u, to) {
+    if (u.owner === to) return;
+    var from = state.players[u.owner].field;
+    from.splice(from.indexOf(u), 1);
+    if (u.origOwner == null) u.origOwner = u.owner;
+    u.owner = to;
+    if (u.origOwner === to) delete u.origOwner;
+    u.sick = true;
+    state.players[to].field.push(u);
+    log(state, cardDef(u.id).name + ' переходит к ' + state.players[to].name + '.');
   }
 
   // ---------- Урон, лечение, смерть ----------
@@ -500,7 +544,7 @@
       state.players.forEach(function (pl) {
         pl.field.forEach(function (u) {
           var st = stats(state, u);
-          if (!u.doomed && u.damage < st.hp) return;
+          if (!u.doomed && (u.damage < st.hp || (u.pale && !u.damage))) return;
           var cost = st.kw.regen;
           if (cost && !st.flags.noRegen && !u.noRegenTurn && u.doomed !== 'noRegen' && pl.ether >= cost) {
             pl.ether -= cost;
@@ -558,6 +602,11 @@
     f.list.splice(f.list.indexOf(f.e), 1);
     state.players[f.e.owner].discard.push({ uid: f.e.uid, id: f.e.id });
     log(state, 'Чары "' + cardDef(f.e.id).name + '" сняты.');
+    var edef = cardDef(f.e.id);
+    if (f.unit && edef.abilities.some(function (ab) { return ab.controlSteal; }) && f.unit.origOwner != null) {
+      changeControl(state, f.unit, f.unit.origOwner);
+    }
+    if (f.unit && edef.buryOnRemove) { f.unit.doomed = 'noRegen'; checkDeaths(state); }
   }
 
   // Карта из могильника: в игру (под началом controller), в руку или из игры
@@ -644,13 +693,13 @@
   // Может ли существо атаковать (без учёта команды и налога)
   function canAttack(state, u) {
     var st = stats(state, u);
-    if (u.rested || u.sick || st.kw.noAttack) return false;
+    if (u.rested || u.sick || u.pale || st.kw.noAttack) return false;
     var limit = heroMods(state, 1 - u.owner).attackLimit;
     return !(limit && st.atk <= limit);
   }
 
   function canBlock(state, blocker, attacker) {
-    if (blocker.rested) return false;
+    if (blocker.rested || blocker.pale) return false;
     var b = stats(state, blocker).kw, a = stats(state, attacker).kw;
     var bWall = cardDef(blocker.id).race === 'wall';
     if (a.unblockable) return false;
@@ -678,7 +727,11 @@
     var cost = ab.cost || {};
     if (state.phase === 'block' && cost.notInBlock) return fail('Нельзя в фазе блока.');
     if (src.unit && stats(state, src.unit).flags.noAbilities) return fail('Существо не может использовать способности.');
+    if (src.unit && !!src.unit.pale !== (ab.aspect === 'pale')) {
+      return fail(src.unit.pale ? 'Существо в бледном аспекте.' : 'Существо уже проявлено.');
+    }
     if (cost.rest && (src.unit.rested || src.unit.sick)) return fail('Существо отдыхает.');
+    if (cost.channel && state.players[pIdx].channels < cost.channel) return fail('Не хватает эфирных каналов.');
     var ether = costEther(state, pIdx, cost.ether, Math.max(1, x || 1));
     if (ether > state.players[pIdx].ether) return fail('Не хватает эфира.');
     if (cost.life && cost.life >= state.players[pIdx].hp) return fail('Не хватает жизни.');
@@ -717,7 +770,8 @@
     if (def.target && !Ef().isValidTarget(state, pIdx, def.target, def.targetFilter, opts.target, ctx)) return fail('Неверная цель.');
     if (sacU && opts.target && opts.target.kind === 'unit' && opts.target.uid === sacU.uid) return fail('Жертва не может быть целью.');
 
-    pay(state, pIdx, cardCost(state, pIdx, def) + (def.xCost === true ? x : 0), def.xCost === 'life' ? x : 0);
+    var paid = cardCost(state, pIdx, def) + (def.xCost === true ? x : 0);
+    pay(state, pIdx, paid, def.xCost === 'life' ? x : 0);
     p.hand.splice(p.hand.indexOf(c), 1);
     log(state, p.name + ' разыгрывает "' + def.name + '"' + (def.xCost ? ' (X=' + x + ')' : '') +
       (opts.target ? ' → ' + refName(state, opts.target) : '') + '.');
@@ -728,7 +782,7 @@
       enterUnit(state, pIdx, c.id, c.uid);
     } else if (def.type === 'enchantment') {
       if (def.attach === 'creature') {
-        var host = findUnit(state, opts.target);
+        var host = opts.target && opts.target.kind === 'grave' ? fromGrave(state, opts.target, 'play', pIdx) : findUnit(state, opts.target);
         if (host) host.enchants.push({ uid: c.uid, id: c.id, owner: pIdx, x: x, usedTurn: 0 });
         else p.discard.push(c);
       } else {
@@ -743,7 +797,7 @@
         Ef().run(state, pIdx, def, ab, ctx);
       }
     });
-    fire(state, 'onCast', {}, function (src, ab) {
+    fire(state, 'onCast', { castType: def.type, castX: def.xCost ? x : 0, castCost: def.cost, castEther: paid }, function (src, ab) {
       if (ab.by === 'enemy' && src.controller === pIdx) return false;
       if (ab.by === 'self' && src.controller !== pIdx) return false;
       if (ab.cardType === 'creature') return def.type === 'creature';
@@ -775,6 +829,11 @@
     if (src.unit) ctx.sourcePower = stats(state, src.unit).atk;
     pay(state, pIdx, costEther(state, pIdx, cost.ether, x, ctx), cost.life || 0);
     if (cost.rest) src.unit.rested = true;
+    if (cost.channel) {
+      state.players[pIdx].bonusChannels -= cost.channel;
+      state.players[pIdx].channels -= cost.channel;
+      log(state, state.players[pIdx].name + ' жертвует эфирный канал.');
+    }
     if (cost.once) (src.unit || src.ench).usedTurn = state.turn;
     ctx.targetSnap = opts.target && opts.target.kind === 'unit' ? unitSnap(state, findUnit(state, opts.target)) : null;
     log(state, def.name + ': способность' + (opts.target ? ' → ' + refName(state, opts.target) : '') + '.');
@@ -1010,6 +1069,8 @@
     fromGrave: fromGrave,
     enterUnit: enterUnit,
     attachHero: attachHero,
+    setAspect: setAspect,
+    changeControl: changeControl,
     castFree: castFree
   };
 })(window.AD = window.AD || {});

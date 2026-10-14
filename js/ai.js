@@ -20,7 +20,7 @@
     if (kw.lifetap) v += 0.5;
     if (kw.regen) v += 1;
     def.abilities.forEach(function (ab) { if (ab.trigger === 'activated') v += 1.5; });
-    return v;
+    return u.pale ? v * 0.35 : v;
   }
 
   // Здоровье героя дороже, когда его мало

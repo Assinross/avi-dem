@@ -49,8 +49,18 @@
       openTurns: {},
       aiTurn: 0,
       aiCount: 0,
+      logOpen: loadLogPref(),
       scale: 1
     };
+  }
+
+  // Открыт ли журнал боя: выбор игрока хранится в браузере, по умолчанию закрыт
+  function loadLogPref() {
+    try { return window.localStorage.getItem('avi-dem-log') === '1'; } catch (e) { return false; }
+  }
+
+  function saveLogPref(open) {
+    try { window.localStorage.setItem('avi-dem-log', open ? '1' : '0'); } catch (e) { /* без запоминания */ }
   }
 
   // ---------- Мелочи ----------
@@ -101,10 +111,10 @@
     var kws = keywordNames(def.keywords);
     var text = (kws.length ? '<b>' + esc(kws.join(', ')) + '.</b> ' : '') + esc(def.text || '');
     var c = cost == null ? def.cost : cost;
-    return '<div class="card full el-' + def.element + ' ' + (extra || '') + '" ' + (attrs || '') + '>' +
+    return '<div class="card full el-' + def.element + ' fac-' + (def.faction || 'neutral') + ' ' + (extra || '') + '" ' + (attrs || '') + '>' +
       artHtml(def, 'card-art') +
       '<div class="cost' + (c !== def.cost ? ' changed' : '') + '">' + c + (def.xCost ? '<small>+X</small>' : '') + '</div>' +
-      '<div class="card-name">' + esc(def.name) + '</div>' +
+      '<div class="card-name"><span>' + esc(def.name) + '</span></div>' +
       '<div class="card-type">' + esc(typeLine(def)) + '</div>' +
       '<div class="card-text">' + text + '</div>' +
       (def.type === 'creature' ? '<div class="stat atk">' + def.atk + '</div><div class="stat hp">' + def.hp + '</div>' : '') +
@@ -168,12 +178,13 @@
     var order = attackList.indexOf(u.uid);
     var blocks = currentBlocks(), blocking = false;
     for (var k in blocks) if (blocks[k] === u.uid) blocking = true;
-    var cls = ['token', 'el-' + def.element, u.owner === ME ? 'mine' : 'foe'];
+    var cls = ['token', 'el-' + def.element, 'fac-' + (def.faction || 'neutral'), u.owner === ME ? 'mine' : 'foe'];
     if (order >= 0) cls.push('attacking');
     if (blocking) cls.push('blocking');
     if (u.damage > 0) cls.push('damaged');
     if (u.sick) cls.push('sick');
     if (u.rested) cls.push('rested');
+    if (u.pale) cls.push('pale-aspect');
     if (isTarget({ kind: 'unit', uid: u.uid })) cls.push(ui.sel && ui.sel.step === 'sac' ? 'sacrificable' : 'targetable');
     if (ui.blockPick === u.uid) cls.push('picked');
     if (myMain() && !ui.sel && u.owner === ME && E().canAttack(S, u)) cls.push('ready');
@@ -198,7 +209,7 @@
       (blocking ? '<div class="badge shield">' + svg(ICONS.shield) + '</div>' : '') +
       (u.rested ? '<div class="badge rest" title="Отдыхает">' + svg(ICONS.moon) + '</div>' : '') +
       ab +
-      '<div class="tk-name">' + esc(def.name) + '</div>' +
+      '<div class="tk-name"><span>' + esc(def.name) + '</span></div>' +
       (u.enchants.length ? '<div class="tk-ench">' + u.enchants.map(function (e) { return enchChip(e, u.owner); }).join('') + '</div>' : '') +
       '</div>';
   }
@@ -210,7 +221,7 @@
     var target = isTarget({ kind: 'hero', player: p }) ? ' targetable' : '';
     var ench = pl.enchants.map(function (e) { return enchChip(e, p); }).join('');
     return '<div class="hero ' + (p === ME ? 'mine' : 'foe') + target + (S.active === p ? ' active' : '') + '" data-hero="' + p + '">' +
-      '<div class="portrait el-' + (pl.element || 'neutral') + '">' + svg(RUNES[pl.element] || RUNES.neutral, 'rune') +
+      '<div class="portrait el-' + (pl.element || 'neutral') + '">' + portraitArt(pl) +
       '<div class="hero-hp">' + Math.max(0, pl.hp) + '</div></div>' +
       '<div class="hero-info">' +
       '<div class="hero-name">' + esc(pl.name) + ' <small>ур. ' + pl.level + '</small></div>' +
@@ -223,16 +234,24 @@
       '</div></div>';
   }
 
+  // Портрет героя: арт лидера или карты-аватара монстра, иначе руна стихии
+  function portraitArt(pl) {
+    var url = pl.art && AD.Assets.url(pl.art);
+    if (url) return '<div class="art portrait-art" style="background-image:url(' + url + ')"></div>';
+    return svg(RUNES[pl.element] || RUNES.neutral, 'rune');
+  }
+
   // ---------- Рука ----------
 
   function handHtml() {
-    var p = S.players[ME], n = p.hand.length, cw = 118, width = 550, gap = 16;
+    var p = S.players[ME], n = p.hand.length, cw = 118, width = ui.logOpen ? 520 : 790, gap = 16;
     if (n > 1 && n * cw + (n - 1) * gap > width) gap = (width - n * cw) / (n - 1);
     return p.hand.map(function (c, i) {
       var def = E().cardDef(c.id);
       var playable = canIAct() && E().canPlay(S, ME, c.uid, 1).ok;
       var cls = (playable ? 'playable' : 'unplayable') + (ui.sel && ui.sel.kind === 'play' && ui.sel.uid === c.uid ? ' selected' : '');
-      var style = i > 0 ? 'style="margin-left:' + gap + 'px"' : '';
+      var mid = (n - 1) / 2, off = i - mid;
+      var style = 'style="' + (i > 0 ? 'margin-left:' + gap + 'px;' : '') + '--rot:' + (off * 2.5) + 'deg;--lift:' + Math.round(off * off * 1.5) + 'px"';
       return cardFull(def, cls, 'data-hand="' + c.uid + '" ' + style, E().cardCost(S, ME, def));
     }).join('');
   }
@@ -254,8 +273,10 @@
 
   function phaseStrip() {
     var cur = currentPhase();
-    return '<div class="phases"><div class="turn-label">' + (S.active === ME ? 'Ваш ход' : 'Ход противника') + '</div>' +
+    return '<div class="phases"><div class="emblem' + (S.active === ME ? ' mine' : '') + '">' + svg(ICONS.swords) + '</div>' +
+      '<div class="turn-label">' + (S.active === ME ? 'Ваш ход' : 'Ход противника') + '</div>' +
       PHASES.map(function (ph) { return '<div class="phase' + (ph === cur ? ' current' : '') + '">' + ph + '</div>'; }).join('') +
+      '<button class="ghost log-toggle' + (ui.logOpen ? ' on' : '') + '" data-btn="log">Журнал</button>' +
       '</div>';
   }
 
@@ -355,6 +376,7 @@
   function render() {
     var scroll = stage.querySelector('.log-body');
     var logAtBottom = !scroll || scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 4;
+    stage.classList.toggle('log-open', ui.logOpen);
     stage.innerHTML =
       '<div class="board">' +
       '<div class="hero-row foe-row">' + heroPanel(FOE) + foeHand() + '</div>' +
@@ -363,10 +385,10 @@
       '<div class="field my-field">' + S.players[ME].field.map(token).join('') + '</div>' +
       '<div class="bottom-row">' + heroPanel(ME) + '<div class="hand">' + handHtml() + '</div>' + controls() + '</div>' +
       '</div>' +
-      logHtml() +
+      (ui.logOpen ? logHtml() : '') +
       '<svg class="lines"></svg>' + xBar() + '<div class="peek"></div>' + gravePicker() + overlay();
     var body = stage.querySelector('.log-body');
-    if (logAtBottom) body.scrollTop = body.scrollHeight;
+    if (body && logAtBottom) body.scrollTop = body.scrollHeight;
     drawLines();
   }
 
@@ -477,7 +499,7 @@
     Object.keys(before.units).forEach(function (uid) {
       if (now[uid]) return;
       var b = before.units[uid], g = document.createElement('div');
-      g.className = 'ghost';
+      g.className = 'dying';
       g.innerHTML = b.html;
       g.style.left = (b.c.x - b.w / 2) + 'px';
       g.style.top = (b.c.y - b.h / 2) + 'px';
@@ -651,6 +673,7 @@
   function onButton(name) {
     if (name === 'finish') { var w = S.winner, cb = onEnd; S = null; if (cb) cb(w); return; }
     if (name === 'cancel') { ui.sel = null; render(); return; }
+    if (name === 'log') { ui.logOpen = !ui.logOpen; saveLogPref(ui.logOpen); render(); return; }
     if (name === 'closegrave') { ui.graveView = null; render(); return; }
     if (name === 'xminus' || name === 'xplus') {
       ui.sel.x = Math.max(1, Math.min(maxX(ui.sel), ui.sel.x + (name === 'xplus' ? 1 : -1)));
@@ -747,7 +770,7 @@
     onEnd = done;
     ui = freshUi();
     ui.scale = AD.Screens ? AD.Screens.scale() : 1;
-    stage.className = 'stage battle';
+    stage.className = 'stage battle' + (ui.logOpen ? ' log-open' : '');
     if (!bound) {
       stage.addEventListener('click', onClick);
       stage.addEventListener('contextmenu', onContext);

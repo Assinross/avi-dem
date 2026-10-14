@@ -16,7 +16,7 @@
   // Вредные эффекты: при автоматическом выборе цели (бесплатное колдовство босса) бьют по врагу
   var HARMFUL = {
     damage: 1, destroy: 1, exile: 1, rest: 1, unsummon: 1, selfHarm: 1, discard: 1,
-    burnEther: 1, stealEther: 1, drainLife: 1, destroyEnchantment: 1, sacrificeTarget: 0
+    burnEther: 1, stealEther: 1, drainLife: 1, destroyEnchantment: 1, sacrificeTarget: 0, gainControl: 1, cleave: 1, paleBlast: 1
   };
 
   // ---------- Ключевые слова ----------
@@ -46,8 +46,12 @@
       case 'friendly': case 'enemy': case 'all': units(spec.count); break;
       case 'targetGraveyard': n = targetRef && targetRef.kind === 'hero' ? state.players[targetRef.player].graveyard.length : 0; break;
       case 'targetHandOver5': n = targetRef && targetRef.kind === 'hero' ? Math.max(0, state.players[targetRef.player].hand.length - 5) : 0; break;
+      case 'ownGraveyard': n = state.players[pIdx].graveyard.length; break;
+      case 'targetPaleAspect':
+        n = targetRef && targetRef.kind === 'hero' ? state.players[targetRef.player].field.filter(function (u) { return u.pale; }).length : 0;
+        break;
     }
-    return n * (spec.mult || 1);
+    return n * (spec.mult || 1) + (spec.add || 0);
   }
 
   // Значение количества: число, 'X', 'power', {count}, снимки жертвы и цели
@@ -70,6 +74,8 @@
       case 'ownChannels': return state.players[pIdx].channels;
       case 'damage': return ctx.damage || 0;
       case 'enchantedToughness': return ctx.enchantedSnap ? ctx.enchantedSnap.hp : 0;
+      case 'castCost': return ctx.castCost || 0;
+      case 'castEther': return ctx.castEther || 0;
     }
     return 0;
   }
@@ -95,7 +101,25 @@
     if (f.maxAtk != null && st.atk > val(f.maxAtk)) return false;
     if (f.maxHp != null && st.hp > val(f.maxHp)) return false;
     if (f.rested && !u.rested) return false;
+    if (f.aspect === 'pale' && !u.pale) return false;
+    if (f.aspect === 'bright' && u.pale) return false;
+    if (f.ltSourceAtk || f.ltSourceHp) {
+      var src = ctx && E().findUnit(state, ctx.sourceUid);
+      if (!src) return false;
+      var ss = E().stats(state, src);
+      if (f.ltSourceAtk && !(st.atk < ss.atk)) return false;
+      if (f.ltSourceHp && !(st.hp < ss.hp)) return false;
+    }
+    if (f.sameRaceAsTarget) {
+      var tu = ctx && ctx.target && E().findUnit(state, ctx.target);
+      if (!tu || E().cardDef(tu.id).race !== def.race) return false;
+    }
     return true;
+  }
+
+  // Существо в бледном аспекте видно только эффектам, которые явно его ищут
+  function aspectVisible(u, f) {
+    return !u.pale || (f && (f.aspect === 'pale' || f.aspect === 'any'));
   }
 
   function matchCard(def, f) {
@@ -128,7 +152,7 @@
     ctx = ctx || { controller: pIdx };
     function unitOk(u) {
       var st = E().stats(state, u);
-      return !st.kw.untargetable && matchFilter(state, u, filter, ctx);
+      return !st.kw.untargetable && aspectVisible(u, filter) && matchFilter(state, u, filter, ctx);
     }
     switch (spec) {
       case 'creature': case 'enemyCreature': case 'friendlyCreature': case 'creatureOrHero':
@@ -184,7 +208,7 @@
     var out = [];
     state.players.forEach(function (pl, i) {
       pl.field.forEach(function (u) {
-        if (test(i) && matchFilter(state, u, filter, ctx)) out.push({ kind: 'unit', uid: u.uid });
+        if (test(i) && aspectVisible(u, filter) && matchFilter(state, u, filter, ctx)) out.push({ kind: 'unit', uid: u.uid });
       });
     });
     return out;
@@ -225,6 +249,9 @@
     var c = ab.condition;
     if (!c) return true;
     if (c.enemyMoreChannels && !(state.players[1 - pIdx].channels > state.players[pIdx].channels)) return false;
+    if (c.activeNotEnchantedOwner && state.active === ctx.enchantedOwner) return false;
+    if (c.castType && ctx.castType !== c.castType) return false;
+    if (c.castXCost && !ctx.castX) return false;
     if (c.notDamaged || c.notNew) {
       var u = E().findUnit(state, ctx.sourceUid);
       if (!u) return false;
@@ -392,6 +419,86 @@
       var pl = s.players[ref.player];
       pl.ether = Math.max(0, pl.ether - pl.field.length * n);
     },
+    // Вытянуть эфир у героя и вылечить своего на столько же
+    drainEther: function (s, p, ref, n) {
+      if (ref.kind !== 'hero') return;
+      var from = s.players[ref.player], k = Math.min(n, from.ether);
+      from.ether -= k;
+      if (k) E().heal(s, { kind: 'hero', player: p }, k);
+    },
+    // Копия чар в руку
+    copyEnchantToHand: function (s, p, ref) {
+      if (ref.kind !== 'ench') return;
+      var f = E().findEnchant(s, ref.uid);
+      if (!f) return;
+      s.players[p].hand.push({ uid: s.seq++, id: f.e.id });
+      E().log(s, s.players[p].name + ' получает копию чар "' + E().cardDef(f.e.id).name + '".');
+    },
+    // Аспекты бледных существ
+    dissipate: function (s, p, ref) { var u = unitOf(s, ref); if (u) E().setAspect(s, u, true); },
+    manifest: function (s, p, ref) { var u = unitOf(s, ref); if (u) E().setAspect(s, u, false); },
+    toggleAspect: function (s, p, ref) { var u = unitOf(s, ref); if (u) E().setAspect(s, u, !u.pale); },
+    // Проявиться со стороной X/X
+    manifestAs: function (s, p, ref, n) {
+      var u = unitOf(s, ref);
+      if (!u || !u.pale) return;
+      var def = E().cardDef(u.id);
+      u.perm.atk = n - (def.atk || 0);
+      u.perm.hp = n - (def.hp || 0);
+      E().setAspect(s, u, false, true);
+    },
+    gainControl: function (s, p, ref) { var u = unitOf(s, ref); if (u) E().changeControl(s, u, p); },
+    giveControl: function (s, p, ref) { var u = unitOf(s, ref); if (u) E().changeControl(s, u, 1 - p); },
+    // Здоровье существа становится n (сила не меняется)
+    setBaseHp: function (s, p, ref, n) {
+      var u = unitOf(s, ref);
+      if (u) u.perm.hp = n - (E().cardDef(u.id).hp || 0);
+    },
+    aspectLock: function (s) { s.aspectLock = true; E().log(s, 'Смена аспектов невозможна до конца хода.'); },
+    // Каждый ход: нет бледных - чары исчезают, иначе гибнет самое хрупкое бледное существо
+    paleWarp: function (s, p, ref, n, ab, ctx) {
+      var pale = [];
+      s.players.forEach(function (pl) {
+        pl.field.forEach(function (u) { if (E().stats(s, u).kw.pale) pale.push(u); });
+      });
+      if (!pale.length) { if (ctx.ench) E().removeEnchant(s, ctx.ench.uid); return; }
+      pale.sort(function (a, b) { return (E().stats(s, a).hp - a.damage) - (E().stats(s, b).hp - b.damage); });
+      pale[0].doomed = true;
+    },
+    // 3 урона бледному существу, 1 - обычному
+    paleBlast: function (s, p, ref, n, ab, ctx) {
+      var u = unitOf(s, ref);
+      if (!u) return;
+      E().dealDamage(s, ref, E().stats(s, u).kw.pale ? 3 : 1, { name: ctx.sourceName, kind: 'magic' });
+    },
+    // Уничтожить: бледное - урон врагу по его силе, обычное - его хозяин лечится на силу+здоровье
+    cleave: function (s, p, ref, n, ab, ctx) {
+      var u = unitOf(s, ref);
+      if (!u) return;
+      var st = E().stats(s, u);
+      if (st.kw.pale) E().dealDamage(s, { kind: 'hero', player: 1 - p }, st.atk, { name: ctx.sourceName, kind: 'magic' });
+      else E().heal(s, { kind: 'hero', player: u.owner }, st.atk + st.hp);
+      u.doomed = true;
+    },
+    // Каждый герой сбрасывает по карте за каждую породу своих бледных, враг берёт столько же
+    paleTheft: function (s) {
+      [0, 1].forEach(function (i) {
+        var races = {};
+        s.players[i].field.forEach(function (u) { if (E().stats(s, u).kw.pale) races[E().cardDef(u.id).race + E().cardDef(u.id).code.slice(0, 3)] = 1; });
+        var n = Math.min(Object.keys(races).length, s.players[i].hand.length);
+        if (!n) return;
+        E().discard(s, i, n);
+        E().draw(s, 1 - i, n);
+      });
+    },
+    // Уничтожить существо и вернуть его в игру под своим началом
+    reclaim: function (s, p, ref) {
+      var u = unitOf(s, ref);
+      if (!u) return;
+      var owner = u.origOwner != null ? u.origOwner : u.owner, uid = u.uid;
+      E().removeUnit(s, u, 'die');
+      E().fromGrave(s, { kind: 'grave', player: owner, uid: uid }, 'play', p);
+    },
     // Бесплатно сыграть карту (сценарии боссов)
     castFree: function (s, p, ref, n, ab) { E().castFree(s, p, ab.card); }
   };
@@ -429,6 +536,7 @@
     parseKeywords: parseKeywords,
     amount: amount,
     matchFilter: matchFilter,
+    aspectVisible: aspectVisible,
     matchCard: matchCard,
     chooseSpec: chooseSpec,
     chooseFilter: chooseFilter,

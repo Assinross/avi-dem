@@ -171,4 +171,92 @@ module.exports = function (t) {
     E.endTurn(s, 0);
     ok(s.players[1].field.some(function (u) { return u.id === 'bewr'; }));
   });
+  // ---------- Аспекты Иных ----------
+
+  test('бледный аспект: рассеянное не атакует, не цель для Искры и массового урона', function () {
+    var s = game(), u = put(s, 0, 'smtg');
+    ok(E.activate(s, 0, u.uid, 0).ok, 'рассеяться');
+    eq(u.pale, true);
+    eq(E.canAttack(s, u), false);
+    var spark = give(s, 1, 'spark');
+    eq(AD.Effects.listTargets(s, 1, 'creatureOrHero').some(function (r) { return r.uid === u.uid; }), false);
+    E.playCard(s, 0, give(s, 0, 'thunderstorm'));
+    eq(u.damage, 0, 'шквал не задел рассеянного');
+  });
+
+  test('проявление за жертву и за изгнание из могильника', function () {
+    var s = game(), o = put(s, 0, 'ous1'), rat = put(s, 0, 'ash_rat');
+    o.pale = true;
+    ok(E.activate(s, 0, o.uid, 1, { sacrifice: rat.uid }).ok);
+    eq(o.pale, false);
+    var f = put(s, 0, 'smfx');
+    f.pale = true;
+    var g = grave(s, 1, 'ash_bat');
+    ok(E.activate(s, 0, f.uid, 1, { target: g }).ok);
+    eq(f.pale, false);
+    eq(s.players[1].graveyard.length, 0);
+  });
+
+  test('Бледный призрак входит рассеянным и проявляется X/X от колдовства', function () {
+    var s = game();
+    var uid = give(s, 0, 'osj2');
+    E.playCard(s, 0, uid);
+    var u = E.findUnit(s, uid);
+    eq(u.pale, true);
+    E.playCard(s, 0, give(s, 0, 'thunderstorm'), {});
+    eq(u.pale, false);
+    eq([E.stats(s, u).atk, E.stats(s, u).hp], [2, 2]);
+  });
+
+  test('Поток бьёт только рассеянных', function () {
+    var s = game(), a = put(s, 0, 'smtg'), b = put(s, 1, 'ash_ogre');
+    a.pale = true;
+    E.playCard(s, 0, give(s, 0, 'oflx'));
+    eq(a.damage, 1, 'одно проявленное существо');
+    eq(b.damage, 0);
+  });
+
+  test('Страж аспектов: смена аспекта стоит эфир и жизнь', function () {
+    var s = game(), u = put(s, 0, 'smtg');
+    E.attachHero(s, 0, 'prwr', 1);
+    var hp = s.players[0].hp, eth = s.players[0].ether;
+    ok(E.activate(s, 0, u.uid, 0).ok);
+    eq([s.players[0].hp, s.players[0].ether], [hp - 1, eth - 1]);
+  });
+
+  // ---------- Контроль и прочее ----------
+
+  test('Смена власти: контроль пока висят чары, снятие возвращает', function () {
+    var s = game(), u = put(s, 1, 'ash_ogre');
+    ok(E.playCard(s, 0, give(s, 0, 'chcm'), { target: unit(u) }).ok);
+    eq(u.owner, 0);
+    var e = u.enchants[0];
+    ok(E.playCard(s, 0, give(s, 0, 'clnp'), { target: { kind: 'ench', uid: e.uid } }).ok);
+    eq(u.owner, 1);
+  });
+
+  test('Наскоро: существо из чужого могильника, снятие чар убивает его', function () {
+    var s = game(), g = grave(s, 1, 'ash_ogre');
+    ok(E.playCard(s, 0, give(s, 0, 'qkfx'), { target: g }).ok);
+    var u = s.players[0].field.filter(function (x) { return x.id === 'ash_ogre'; })[0];
+    ok(u, 'огр у нас');
+    eq(E.stats(s, u).atk, 5);
+    E.playCard(s, 0, give(s, 0, 'clnp'), { target: { kind: 'ench', uid: u.enchants[0].uid } });
+    eq(E.findUnit(s, u.uid), null);
+  });
+
+  test('Серпень-патриарх: цена по числу сородичей цели, усыпляет всех', function () {
+    var s = game(), m = put(s, 0, 'mtpt'), r1 = put(s, 1, 'ash_rat'), r2 = put(s, 1, 'drat'), o = put(s, 1, 'ash_ogre');
+    var eth = s.players[0].ether;
+    ok(E.activate(s, 0, m.uid, 0, { target: unit(r1) }).ok);
+    eq(s.players[0].ether, eth - 2);
+    eq([r1.rested, r2.rested, o.rested], [true, true, false]);
+  });
+
+  test('Голографическая стена: здоровье по могильнику', function () {
+    var s = game(), w = put(s, 0, 'wlil');
+    grave(s, 0, 'ash_rat'); grave(s, 0, 'ash_rat'); grave(s, 0, 'ash_rat');
+    ok(E.activate(s, 0, w.uid, 0).ok);
+    eq(E.stats(s, w).hp, 4);
+  });
 };
