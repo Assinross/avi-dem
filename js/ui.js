@@ -373,12 +373,19 @@
 
   // ---------- Отрисовка ----------
 
+  // Фон поля боя - пейзаж фракции противника, если картинка есть
+  function boardArt() {
+    var race = cfg.races && cfg.races[S.players[FOE].element];
+    var url = AD.Assets.url('backgrounds/' + (race ? race.faction : 'neutral'));
+    return url ? ' style="background-image: url(\'' + url + '\')"' : '';
+  }
+
   function render() {
     var scroll = stage.querySelector('.log-body');
     var logAtBottom = !scroll || scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 4;
     stage.classList.toggle('log-open', ui.logOpen);
     stage.innerHTML =
-      '<div class="board">' +
+      '<div class="board"' + boardArt() + '>' +
       '<div class="hero-row foe-row">' + heroPanel(FOE) + foeHand() + '</div>' +
       '<div class="field foe-field">' + S.players[FOE].field.map(token).join('') + '</div>' +
       '<div class="midline">' + phaseStrip() + '<div class="hint">' + hint() + '</div></div>' +

@@ -614,4 +614,5 @@ button:disabled { opacity: 0.5; cursor: default; }
 
 /* крупная текстура - одна картинка без повторов */
 .board, .stage.screen, .art.ph, .portrait, .node { background-size: cover; background-repeat: no-repeat; }
+.board[style] { background-position: center; background-color: #5c5f66; background-blend-mode: multiply; }
 .portrait-art { position: absolute; inset: 4px; border-radius: 5px; background-size: cover; background-position: 50% 25%; }
