@@ -1,0 +1,102 @@
+{
+  "chaos": {
+    "name": "Кланы Перелома",
+    "hero": "Вождь Перелома",
+    "text": "Вольные кланы мутантов. Прямой урон, стены, жертвы ради краткой силы.",
+    "faction": "fracture_clans",
+    "element": "chaos",
+    "starter": [
+      "ash_rat",
+      "ash_rat",
+      "ash_rat",
+      "ash_rat",
+      "fire_wave",
+      "fire_wave",
+      "fire_wave",
+      "bloodwing",
+      "spark",
+      "spark",
+      "spark",
+      "spark",
+      "tempering",
+      "tempering",
+      "tempering",
+      "tempering"
+    ]
+  },
+  "life": {
+    "name": "Рой мутаций",
+    "hero": "Матриарх Гнезда",
+    "text": "Коллективная биологическая цивилизация. Рост числа, яды, жертвы малых ради крупных.",
+    "faction": "mutation_swarm",
+    "element": "life",
+    "starter": [
+      "spfg",
+      "spfg",
+      "spfg",
+      "spfg",
+      "maho",
+      "tiwr",
+      "tiwr",
+      "tiwr",
+      "shcl",
+      "shcl",
+      "shcl",
+      "dnfr",
+      "maho",
+      "mndp",
+      "mndp",
+      "mndp"
+    ]
+  },
+  "movement": {
+    "name": "Астральный Синклит",
+    "hero": "Архонт резонанса",
+    "text": "Древняя псионическая цивилизация. Контроль, барьеры, кража эфира и темп боя.",
+    "faction": "astral_synklit",
+    "element": "movement",
+    "starter": [
+      "lsus",
+      "lsus",
+      "lsus",
+      "lsus",
+      "avsc",
+      "avsc",
+      "avsc",
+      "avsc",
+      "lsds",
+      "lsds",
+      "lsds",
+      "lsds",
+      "lmwa",
+      "curs",
+      "tgsk",
+      "tgsk"
+    ]
+  },
+  "synthesis": {
+    "name": "Пограничный Союз",
+    "hero": "Маршал рубежа",
+    "text": "Люди пограничных колоний. Техника, ремонт, подкрепления и надёжная защита.",
+    "faction": "frontier_union",
+    "element": "synthesis",
+    "starter": [
+      "mcwo",
+      "mcwo",
+      "mcwo",
+      "mcwo",
+      "enfl",
+      "enfl",
+      "enfl",
+      "enfl",
+      "twen",
+      "twen",
+      "twen",
+      "twen",
+      "jrrg",
+      "jrrg",
+      "jrrg",
+      "rfpt"
+    ]
+  }
+}

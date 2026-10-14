@@ -1,0 +1,694 @@
+{
+ "startLevel": 1,
+ "chapters": [
+  {
+   "name": "Пепельные пустоши",
+   "text": "Окраины разрушенного мира, где эфир ещё тих. Мелкие твари проверят вашу решимость.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_batt"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_drat"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_gbbr"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_tnsa"
+    },
+    {
+     "id": "b5",
+     "x": 0.795,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_mcwo"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_orgd",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "ash_rat",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "b5"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  },
+  {
+   "name": "Заросшие колонии",
+   "text": "Брошенные поселения, затянутые живой тканью роя. Здесь начинаются настоящие бои.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_prat"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_sehl"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_brab"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_kbgd"
+    },
+    {
+     "id": "b5",
+     "x": 0.795,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_lasn"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_grog",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "fire_wave",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "b5"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  },
+  {
+   "name": "Затопленные копи",
+   "text": "Машины Союза и резонаторы Синклита стерегут потоки эфира.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_mxhp"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_wzsp"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_myho"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_vbat"
+    },
+    {
+     "id": "b5",
+     "x": 0.795,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_ctmn"
+    },
+    {
+     "id": "b6",
+     "x": 0.795,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_trsn"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_orel",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "flame_priest",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "b5"
+    ],
+    [
+     "b4",
+     "b6"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  },
+  {
+   "name": "Гнездовья",
+   "text": "Логова роя, шагоходов и десанта.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_irmz"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_bhwr"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_frel"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_mlfi"
+    },
+    {
+     "id": "b5",
+     "x": 0.795,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_tiqn"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_bhmo",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "behd",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "b5"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  },
+  {
+   "name": "Огненный перевал",
+   "text": "Горы, где исполины кланов и конструкты стерегут перевалы.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_ogkn"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_erel"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_wlwd"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_lmwd"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_wkhr",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "mcwo",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  },
+  {
+   "name": "Логово левиафанов",
+   "text": "Последний рубеж. Левиафаны помнят время до раскола эфира.",
+   "nodes": [
+    {
+     "id": "start",
+     "x": 0.06,
+     "y": 0.5,
+     "type": "start"
+    },
+    {
+     "id": "b1",
+     "x": 0.207,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_kbsh"
+    },
+    {
+     "id": "b2",
+     "x": 0.354,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_stmz"
+    },
+    {
+     "id": "b3",
+     "x": 0.354,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_rzmn2"
+    },
+    {
+     "id": "r1",
+     "x": 0.501,
+     "y": 0.2,
+     "type": "reward"
+    },
+    {
+     "id": "e1",
+     "x": 0.501,
+     "y": 0.8,
+     "type": "event"
+    },
+    {
+     "id": "b4",
+     "x": 0.648,
+     "y": 0.5,
+     "type": "battle",
+     "monster": "m_wlbl"
+    },
+    {
+     "id": "b5",
+     "x": 0.795,
+     "y": 0.2,
+     "type": "battle",
+     "monster": "m_moti"
+    },
+    {
+     "id": "b6",
+     "x": 0.795,
+     "y": 0.8,
+     "type": "battle",
+     "monster": "m_budg"
+    },
+    {
+     "id": "gate",
+     "x": 0.942,
+     "y": 0.5,
+     "type": "gate",
+     "monster": "m_grdg",
+     "boss": [
+      {
+       "trigger": "startOfTurn",
+       "whose": "owner",
+       "effect": "castFree",
+       "card": "avsc",
+       "every": 4
+      }
+     ]
+    }
+   ],
+   "edges": [
+    [
+     "start",
+     "b1"
+    ],
+    [
+     "b1",
+     "b2"
+    ],
+    [
+     "b1",
+     "b3"
+    ],
+    [
+     "b2",
+     "r1"
+    ],
+    [
+     "b3",
+     "e1"
+    ],
+    [
+     "r1",
+     "b4"
+    ],
+    [
+     "e1",
+     "b4"
+    ],
+    [
+     "b4",
+     "b5"
+    ],
+    [
+     "b4",
+     "b6"
+    ],
+    [
+     "b4",
+     "gate"
+    ]
+   ]
+  }
+ ]
+}

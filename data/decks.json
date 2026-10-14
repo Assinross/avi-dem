@@ -1,0 +1,12 @@
+{
+  "chaos_starter": {
+    "name": "Искры Хаоса", "element": "chaos",
+    "cards": ["ash_rat", "ash_rat", "dusk_pup", "sparker", "ember_wall", "flame_priest", "ash_bat", "ash_bat",
+              "magma_barrier", "ash_ogre", "spark", "falling_star", "lightning", "tempering", "war_cry"]
+  },
+  "chaos_ash_cult": {
+    "name": "Пепельный культ", "element": "chaos",
+    "cards": ["ash_rat", "ash_rat", "sparker", "flame_priest", "ash_bat", "bloodwing", "ghost_wolf", "basalt_wall",
+              "spark", "fire_wave", "tremor", "flame_fury", "smolder", "onslaught", "burning_orb"]
+  }
+}
