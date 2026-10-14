@@ -15,6 +15,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 from cards_spec import SPEC, SKIP, SPECIAL, KEEP_IDS, EXTRA_CARDS  # noqa: E402
 from names_factions import FACTIONS, TRIBES, NAMES, TEXTS  # noqa: E402
 
+# Центр кадра картинки по умолчанию у верхней трети: на сгенерированном арте фигура обычно
+# стоит в полный рост, и при широкой обрезке на карте иначе срезается голова
+FOCUS = {'alst': [0.5, 0.0]}
+
 ELEMENT = {'Red': 'chaos', 'Green': 'life', 'Blue': 'movement', 'Black': 'synthesis', 'White': 'white'}
 TYPE = {'Creature': 'creature', 'Sorcery': 'sorcery', 'Enchantment': 'enchantment'}
 RARITY = {'Common': 'common', 'Rare': 'rare', 'Unique': 'unique', 'Cantrip': 'cantrip'}
@@ -84,7 +88,7 @@ def main():
         if code in SPECIAL or c['color'] == 'White':
             card['faction'] = 'neutral'
         card['art'] = 'cards/%s/%s' % (card['faction'], card['id'])
-        card['focus'] = [0.5, 0.4]
+        card['focus'] = FOCUS.get(card['id'], [0.5, 0.12])
         cards.append(card)
     for extra in EXTRA_CARDS:
         extra = dict(extra, faction='neutral', art='cards/neutral/' + extra['id'])

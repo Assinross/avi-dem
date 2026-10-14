@@ -40,6 +40,7 @@
       menu: menuHtml, newgame: newGameHtml, map: mapHtml, reward: rewardHtml, event: eventHtml, done: doneHtml
     }[view.name];
     stage.innerHTML = html ? html() : '';
+    B().fitCards(stage);
   }
 
   function save() { if (run) AD.Save.save(run); }

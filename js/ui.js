@@ -121,6 +121,20 @@
       '</div>';
   }
 
+  // Подгонка описания полных карт внутри root: если текст не влезает,
+  // сначала уменьшается картинка, затем шрифт описания
+  function fitCards(root) {
+    var list = root.querySelectorAll('.card.full');
+    for (var i = 0; i < list.length; i++) {
+      var text = list[i].querySelector('.card-text'), art = list[i].querySelector('.card-art');
+      if (!text || !art) continue;
+      art.style.height = '';
+      text.style.fontSize = '';
+      for (var h = 7.6; h >= 4.6 && text.scrollHeight > text.clientHeight; h -= 0.5) art.style.height = h + 'em';
+      for (var f = 0.92; f >= 0.66 && text.scrollHeight > text.clientHeight; f -= 0.04) text.style.fontSize = f + 'em';
+    }
+  }
+
   // ---------- Выбор целей ----------
 
   function selCtx() {
@@ -396,6 +410,7 @@
       '<svg class="lines"></svg>' + xBar() + '<div class="peek"></div>' + gravePicker() + overlay();
     var body = stage.querySelector('.log-body');
     if (body && logAtBottom) body.scrollTop = body.scrollHeight;
+    fitCards(stage);
     drawLines();
   }
 
@@ -743,6 +758,7 @@
     }
     if (!id) return;
     peek.innerHTML = cardFull(E().cardDef(id), 'big') + keywordHelp(kws || Ef().parseKeywords(E().cardDef(id).keywords));
+    fitCards(peek);
     var c = center(t);
     peek.style.top = Math.max(10, Math.min(800 - 330, c.y - 160)) + 'px';
     peek.style.left = (c.x > 640 ? c.x - 300 : c.x + 70) + 'px';
@@ -797,6 +813,7 @@
     setConfig: function (c) { cfg = c; },
     setScale: setScale,
     cardFull: function (def, extra, attrs, cost) { return cardFull(def, extra, attrs, cost); },
+    fitCards: fitCards,
     artHtml: artHtml,
     svg: svg,
     esc: esc,
