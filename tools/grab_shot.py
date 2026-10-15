@@ -53,15 +53,16 @@ while y < H:
             y += 1
         if y - y0 > 300:
             mid = (y0 + y) // 2
-            # горизонтальные границы по нескольким строкам
+            # горизонтальные границы по нескольким строкам: от центра наружу до белого поля,
+            # чтобы не цеплять полосу прокрутки и кнопки у краёв экрана
             ls, rs = [], []
             for yy in range(y0 + 20, y - 20, 40):
-                x = 0
-                while x < W and white(x, yy):
-                    x += 1
-                xr = W - 1
-                while xr > 0 and white(xr, yy):
-                    xr -= 1
+                x = W // 2
+                while x > 0 and not white(x - 1, yy):
+                    x -= 1
+                xr = W // 2
+                while xr < W - 1 and not white(xr + 1, yy):
+                    xr += 1
                 ls.append(x)
                 rs.append(xr)
             x0, x1 = sorted(ls)[len(ls) // 2], sorted(rs)[len(rs) // 2]
