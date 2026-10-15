@@ -111,7 +111,8 @@
     var kws = keywordNames(def.keywords);
     var text = (kws.length ? '<b>' + esc(kws.join(', ')) + '.</b> ' : '') + esc(def.text || '');
     var c = cost == null ? def.cost : cost;
-    return '<div class="card full el-' + def.element + ' fac-' + (def.faction || 'neutral') + ' ' + (extra || '') + '" ' + (attrs || '') + '>' +
+    return '<div class="card full el-' + def.element + ' fac-' + (def.faction || 'neutral') + ' ' + (extra || '') + '" ' + (attrs || '') +
+      (def.keywords && def.keywords.length ? ' data-kw="' + esc(def.keywords.join(',')) + '"' : '') + '>' +
       artHtml(def, 'card-art') +
       '<div class="cost' + (c !== def.cost ? ' changed' : '') + '">' + c + (def.xCost ? '<small>+X</small>' : '') + '</div>' +
       '<div class="card-name"><span>' + esc(def.name) + '</span></div>' +
@@ -121,12 +122,17 @@
       '</div>';
   }
 
-  // Подгонка описания полных карт внутри root: если текст не влезает,
-  // сначала уменьшается картинка, затем шрифт описания
+  // Подгонка полных карт внутри root: название уменьшается, пока самое длинное слово не влезет в плашку;
+  // если не влезает описание - сначала уменьшается картинка, затем шрифт описания
   function fitCards(root) {
     var list = root.querySelectorAll('.card.full');
     for (var i = 0; i < list.length; i++) {
       var text = list[i].querySelector('.card-text'), art = list[i].querySelector('.card-art');
+      var name = list[i].querySelector('.card-name span');
+      if (name) {
+        name.style.fontSize = '';
+        for (var n = 1.1; n >= 0.7 && name.scrollWidth > name.clientWidth; n -= 0.05) name.style.fontSize = n + 'em';
+      }
       if (!text || !art) continue;
       art.style.height = '';
       text.style.fontSize = '';
@@ -773,6 +779,30 @@
     return lines.length ? '<div class="kw-help">' + lines.join('') + '</div>' : '';
   }
 
+  // Подсказка по ключевым словам при наведении на полную карту (рука, награда, могильник)
+  var kwTip = null, kwCard = null;
+
+  function onKwOver(ev) {
+    var c = ev.target.closest ? ev.target.closest('.card.full[data-kw]') : null;
+    if (c === kwCard) return;
+    kwCard = c;
+    if (!kwTip) {
+      kwTip = document.createElement('div');
+      kwTip.className = 'kw-tip';
+      document.body.appendChild(kwTip);
+    }
+    var html = c && cfg ? keywordHelp(Ef().parseKeywords(c.dataset.kw.split(','))) : '';
+    kwTip.innerHTML = html;
+    kwTip.style.display = html ? '' : 'none';
+    if (!html) return;
+    var r = c.getBoundingClientRect(), k = ui.scale || 1, w = 262 * k;
+    kwTip.style.transform = 'scale(' + k + ')';
+    kwTip.style.left = Math.max(4, r.right + 10 + w < window.innerWidth ? r.right + 10 : r.left - 10 - w) + 'px';
+    kwTip.style.top = Math.max(4, r.top) + 'px';
+  }
+
+  document.addEventListener('mouseover', onKwOver);
+
   function onKey(ev) {
     if (S && ev.key === 'Escape' && (ui.sel || ui.graveView != null)) { ui.sel = null; ui.graveView = null; render(); }
   }
@@ -814,6 +844,7 @@
     setScale: setScale,
     cardFull: function (def, extra, attrs, cost) { return cardFull(def, extra, attrs, cost); },
     fitCards: fitCards,
+    keywordHelpFor: function (def) { return keywordHelp(Ef().parseKeywords(def.keywords)); },
     artHtml: artHtml,
     svg: svg,
     esc: esc,

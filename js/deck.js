@@ -90,7 +90,7 @@
     if (!open_) return;
     var t = ev.target.closest('[data-peek]'), peek = stage.querySelector('.deck-peek');
     if (!peek) return;
-    peek.innerHTML = t ? B().cardFull(def(t.dataset.peek), 'big') : '';
+    peek.innerHTML = t ? B().cardFull(def(t.dataset.peek), 'big') + B().keywordHelpFor(def(t.dataset.peek)) : '';
     B().fitCards(peek);
   }
 
