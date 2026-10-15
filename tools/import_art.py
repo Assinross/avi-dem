@@ -5,7 +5,7 @@
 (<id>.png, .jpg или .webp), обрезает картинку по центру под формат и сохраняет WebP
 в assets/<out>.webp. Затем пересобирает манифест data/assets.json по файлам в assets/.
 
-Форматы: карты 3:4 (600x800), герои 1:1 (512x512), фоны 16:9 (1280x720).
+Форматы: карты 3:4 (600x800), герои 1:1 (512x512), фоны 16:9 (1280x720), карты глав 3:2 (1200x800).
 Нужен Pillow. Запуск: python3 tools/import_art.py
 """
 import json
@@ -13,7 +13,7 @@ import os
 
 from PIL import Image
 
-SIZES = {'heroes': (512, 512), 'backgrounds': (1280, 720), 'cards': (600, 800)}
+SIZES = {'heroes': (512, 512), 'backgrounds': (1280, 720), 'cards': (600, 800), 'maps': (1200, 800)}
 
 
 def fit(im, w, h):

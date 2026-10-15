@@ -540,15 +540,24 @@ button:disabled { opacity: 0.5; cursor: default; }
 .skills { display: flex; gap: 8px; font-size: 13px; flex-wrap: wrap; }
 .skill { padding: 1px 8px; border-radius: 999px; border: 1px solid var(--gold); color: var(--gold); }
 
-.map { position: relative; margin: 0 20px; }
+.map {
+  position: relative; margin: 10px 14px; border: 1px solid var(--gold-dim); border-radius: 8px;
+  background-color: var(--bg-deep); background-position: center; background-size: cover;
+  box-shadow: 0 0 0 1px var(--bg-deep), 0 0 0 3px var(--gold-dim), 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+/* Затемнение по краям и общее приглушение пейзажа, чтобы узлы читались */
+.map::before {
+  content: ''; position: absolute; inset: 0; border-radius: 8px; pointer-events: none;
+  background: rgba(10, 11, 14, 0.2); box-shadow: inset 0 0 110px 30px rgba(10, 11, 14, 0.9);
+}
 .map-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
-.map-lines line { stroke: var(--gold-dim); stroke-width: 3; stroke-dasharray: 8 7; }
-.map-lines line.done { stroke: var(--gold); stroke-dasharray: none; filter: drop-shadow(0 0 4px var(--gold-soft)); }
+.map-lines path { fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 9; opacity: 0.75; filter: drop-shadow(0 0 3px rgba(230, 196, 110, 0.7)); }
+.map-lines path.done { stroke: var(--gold-hi); stroke-width: 3.5; stroke-dasharray: none; opacity: 1; filter: drop-shadow(0 0 5px var(--gold-soft)); }
 .node {
   position: absolute; width: 66px; height: 66px; margin: -33px 0 0 -33px; padding: 0; border-radius: 50%;
   border: 3px solid var(--el, var(--gold-dim)); background: var(--bg-deep) var(--texture-big); color: var(--gold);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 0 2px var(--gold-dim), 0 6px 14px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 0 3px var(--bg-deep), inset 0 0 0 4px var(--gold-dim), 0 0 0 2px var(--gold), 0 0 0 4px var(--bg-deep), 0 8px 16px rgba(0, 0, 0, 0.85);
 }
 .node .node-ico { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 .node.reward, .node.event, .node.start { --el: var(--gold-dim); }
@@ -556,12 +565,17 @@ button:disabled { opacity: 0.5; cursor: default; }
 .node.available { color: var(--gold-hi); animation: glow 1.4s infinite alternate; }
 .node.cleared { opacity: 0.45; color: var(--text-2); }
 .node.locked { opacity: 0.75; color: var(--text-2); }
-.node.selected { box-shadow: 0 0 0 4px var(--gold-hi), 0 0 28px var(--gold-soft); color: var(--gold-hi); }
+.node.selected { box-shadow: inset 0 0 0 3px var(--bg-deep), inset 0 0 0 4px var(--gold-dim), 0 0 0 2px var(--gold), 0 0 0 5px var(--gold-hi), 0 0 30px var(--gold-soft); color: var(--gold-hi); }
 .node-lv { position: absolute; right: -6px; top: -6px; min-width: 24px; height: 24px; border-radius: 50%; background: var(--bg-deep); border: 1px solid var(--gold); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: var(--text); }
 .node-label { position: absolute; top: 100%; margin-top: 7px; padding: 1px 8px; white-space: nowrap; font-size: 13px; color: var(--text); background: rgba(12, 14, 18, 0.85); border: 1px solid var(--gold-dim); border-radius: 6px; }
 
 .map-foot { display: flex; align-items: center; gap: 20px; padding: 16px 28px; border-top: 1px solid var(--gold-dim); box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.6); }
 .node-info { flex: 1; font-size: 15px; line-height: 1.5; }
+.node-info h3 { margin: 0 0 2px; font-family: var(--font-head); font-size: 28px; line-height: 1.1; color: var(--gold-hi); }
+.ch-dots { display: inline-flex; gap: 6px; margin-right: 12px; vertical-align: -1px; }
+.ch-dots i { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--gold-dim); background: var(--bg-deep); }
+.ch-dots i.done { background: var(--gold); border-color: var(--gold); }
+.ch-dots i.now { background: var(--gold-hi); border-color: var(--gold-hi); box-shadow: 0 0 8px var(--gold-soft); }
 .map-foot .end-turn { min-width: 210px; }
 .foot-buttons { display: flex; flex-direction: column; gap: 8px; }
 .toast { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); padding: 10px 18px; background: var(--panel-2); border: 1px solid var(--hp); border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7); }

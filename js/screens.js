@@ -90,7 +90,7 @@
     var skills = Object.keys(run.skills).map(function (k) {
       return '<span class="skill">' + esc(C().SKILLS[k].name) + ' ' + run.skills[k] + '</span>';
     }).join('');
-    return '<div class="hero-bar"><div class="portrait el-' + run.element + '">' + svg(B().RUNES[run.element], 'rune') + '</div>' +
+    return '<div class="hero-bar">' + B().artHtml({ art: 'heroes/' + r.faction, element: run.element }, 'portrait el-' + run.element) +
       '<div><div class="hero-name">' + esc(run.heroName) + ' <small>' + esc(r.name) + '</small></div>' +
       '<div class="xp"><span>Уровень ' + run.level + '</span><div class="xp-bar"><i style="width:' +
       Math.round(100 * pr[0] / pr[1]) + '%"></i></div><span class="muted">' + pr[0] + ' / ' + pr[1] + ' опыта</span></div>' +
@@ -111,14 +111,26 @@
 
   function mapHtml() {
     var ch = C().chapter(run), W = 1240, H = 470;
+    // Узел начала не рисуем: он нужен только логике доступности. Остальные растягиваем на всю ширину
+    var shown = ch.nodes.filter(function (n) { return n.type !== 'start'; });
+    var xs = shown.map(function (n) { return n.x; }), x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
     var pos = {};
-    ch.nodes.forEach(function (n) { pos[n.id] = { x: 30 + n.x * (W - 60), y: 20 + n.y * (H - 40) }; });
-    var lines = ch.edges.map(function (e) {
+    shown.forEach(function (n) {
+      pos[n.id] = { x: Math.round(90 + (n.x - x0) / ((x1 - x0) || 1) * (W - 180)), y: Math.round(20 + n.y * (H - 40)) };
+    });
+    // Тропы - пологие дуги: изгиб поперёк отрезка, направление чередуется
+    var lines = ch.edges.filter(function (e) { return pos[e[0]] && pos[e[1]]; }).map(function (e, i) {
       var a = pos[e[0]], b = pos[e[1]];
       var done = run.cleared[e[0]] && run.cleared[e[1]];
-      return '<line class="' + (done ? 'done' : '') + '" x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"/>';
+      var k = (i % 2 ? 0.12 : -0.12), cx = (a.x + b.x) / 2 - (b.y - a.y) * k, cy = (a.y + b.y) / 2 + (b.x - a.x) * k;
+      return '<path class="' + (done ? 'done' : '') + '" d="M' + a.x + ' ' + a.y + 'Q' + Math.round(cx) + ' ' + Math.round(cy) +
+        ' ' + b.x + ' ' + b.y + '"/>';
     }).join('');
-    var nodes = ch.nodes.map(function (n) {
+    var mapArt = AD.Assets.url('maps/ch' + (run.chapter + 1));
+    var dots = cfg.campaign.chapters.map(function (c, i) {
+      return '<i class="' + (i < run.chapter ? 'done' : i === run.chapter ? 'now' : '') + '"></i>';
+    }).join('');
+    var nodes = shown.map(function (n) {
       var st = nodeState(n), p = pos[n.id];
       var m = n.monster ? C().monster(n.monster) : null;
       return '<button class="node ' + n.type + ' ' + st + (view.selected === n.id ? ' selected' : '') +
@@ -127,10 +139,11 @@
         '<span class="node-label">' + esc(m ? m.name : NODE_NAMES[n.type]) + '</span></button>';
     }).join('');
     return '<div class="map-screen">' +
-      '<header class="map-head"><div><div class="muted">Глава ' + (run.chapter + 1) + ' из ' + cfg.campaign.chapters.length +
-      ' · ' + C().DIFFICULTY[run.difficulty] + '</div><h2>' + esc(ch.name) + '</h2><p class="muted">' + esc(ch.text) + '</p></div>' +
-      heroBar() + '</header>' +
-      '<div class="map"><svg class="map-lines" viewBox="0 0 ' + W + ' ' + H + '">' + lines + '</svg>' + nodes + '</div>' +
+      '<header class="map-head"><div><div class="muted"><span class="ch-dots">' + dots + '</span>Глава ' + (run.chapter + 1) +
+      ' из ' + cfg.campaign.chapters.length + ' · ' + C().DIFFICULTY[run.difficulty] + '</div><h2>' + esc(ch.name) + '</h2>' +
+      '<p class="muted">' + esc(ch.text) + '</p></div>' + heroBar() + '</header>' +
+      '<div class="map"' + (mapArt ? ' style="background-image:url(' + mapArt + ')"' : '') + '>' +
+      '<svg class="map-lines" viewBox="0 0 ' + W + ' ' + H + '">' + lines + '</svg>' + nodes + '</div>' +
       '<footer class="map-foot">' + nodeInfo() +
       '<div class="foot-buttons"><button class="ghost" data-act="deck">Колода (' + run.deck.length + ')</button>' +
       '<button class="ghost" data-act="menu">Меню</button></div></footer>' +
@@ -145,19 +158,19 @@
     var st = nodeState(n), body = '', btn = '';
     if (n.monster) {
       var m = C().monster(n.monster), v = m.variants[run.difficulty] || m.variants[0];
-      body = '<b>' + esc(m.name) + '</b> · ' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + m.level +
+      body = '<h3>' + esc(m.name) + '</h3>' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + m.level +
         ' · здоровье ' + v.hp + ' · опыт +' + C().xpForMonster(m.level) +
         (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '') +
         (m.level > run.level ? '<br><span class="warn">Враг сильнее вас по уровню.</span>' : '');
       if (st === 'available') btn = '<button class="end-turn" data-act="fight">В бой</button>';
     } else if (n.type === 'reward') {
-      body = '<b>Тайник</b> · выбор одной из трёх редких карт вашей фракции.';
+      body = '<h3>Тайник</h3>Выбор одной из трёх редких карт вашей фракции.';
       if (st === 'available') btn = '<button class="end-turn" data-act="visit">Открыть</button>';
     } else if (n.type === 'event') {
-      body = '<b>Святилище</b> · выбор усиления героя.';
+      body = '<h3>Святилище</h3>Выбор усиления героя.';
       if (st === 'available') btn = '<button class="end-turn" data-act="visit">Войти</button>';
     } else {
-      body = 'Начало главы.';
+      body = '<h3>Начало</h3>Отсюда начинается глава.';
     }
     if (st === 'cleared') body += '<br><span class="muted">Пройдено.</span>';
     if (st === 'locked') body += '<br><span class="muted">Пока недоступно.</span>';

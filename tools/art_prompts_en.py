@@ -119,6 +119,20 @@ FIELD = ('Wide 16:9 panoramic landscape with no characters: a frontier mining co
          '(cards will lie there), details and light are near the edges.')
 
 
+# Карты глав кампании (фон экрана карты), по порядку глав
+MAP = [
+    'an ash wasteland: cracked grey earth, fissures glowing red with embers, skeletal ruins of broken towers, ash dunes',
+    'an abandoned frontier colony: steel modules and domes overgrown with living purple-green alien biomass, drifting spores',
+    'flooded mines: dark water filling open pits, rusty drilling rigs and catwalks, blue crystal resonators glowing underwater',
+    'alien hive lairs: organic spires and burrows among wrecked walkers and drop pods, low fog',
+    'a fiery mountain pass: rivers of lava between cliffs, colossal stone gates, smoke and drifting ash',
+    'the leviathan abyss: a dark chasm with giant fossilized leviathan skeletons, astral rifts glowing violet',
+]
+
+MAP_SHOT = ('Wide panoramic landscape seen from above at an angle, like a campaign map, no characters. A faint winding path '
+            'runs across the middle, the middle area is dark and calm (map markers will sit there), light and detail near the edges.')
+
+
 def card(c):
     if c['type'] == 'creature':
         if c.get('race') == 'wall':
@@ -154,6 +168,9 @@ def main():
             x['prompt_en'] = ' '.join([STYLE, UNION, LEADER, BACKDROP])
         elif fid == 'bg_frontier_union':
             x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), UNION, FIELD])
+        elif fid.startswith('map_'):
+            x['prompt_en'] = ' '.join([MAP[int(fid[4:]) - 1][0].upper() + MAP[int(fid[4:]) - 1][1:] + '.', MAP_SHOT,
+                                       STYLE.replace('clear readable silhouette, ', ''), LIGHT])
         elif cards.get(fid, {}).get('faction') == 'frontier_union':
             x['prompt_en'] = card(cards[fid])
         else:
