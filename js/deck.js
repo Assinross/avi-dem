@@ -116,5 +116,5 @@
     render();
   }
 
-  AD.DeckEditor = { open: open, active: function () { return open_; } };
+  AD.DeckEditor = { open: open, active: function () { return open_; }, relayout: function () { if (open_) render(); } };
 })(window.AD = window.AD || {});

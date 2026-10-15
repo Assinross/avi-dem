@@ -51,6 +51,11 @@
     state.log.push({ turn: state.turn, text: text });
   }
 
+  // События для анимаций интерфейса (удар, урон, лечение, гибель...). Интерфейс сам очищает список.
+  function fx(state, ev) {
+    if (state.fx) state.fx.push(ev);
+  }
+
   // ---------- Создание боя ----------
 
   function heroHp(level) { return 7 + 3 * (level - 1); }
@@ -75,7 +80,8 @@
       combat: null,
       fog: false,
       winner: null,
-      log: []
+      log: [],
+      fx: []
     };
     opts.players.forEach(function (o) {
       var level = o.level || 5, skills = o.skills || {};
@@ -411,6 +417,7 @@
     if (stats(state, u).flags.enterRested) u.rested = true;
     if (kw.pale && (def.entersPale || heroMods(state, pIdx).enterPale)) u.pale = true;
     log(state, def.name + ' входит в игру (' + state.players[pIdx].name + ').');
+    fx(state, { t: 'summon', uid: u.uid, p: pIdx });
     def.abilities.forEach(function (ab) {
       if (ab.trigger === 'onEnter') Ef().run(state, pIdx, def, ab, { sourceName: def.name, sourceUid: u.uid, controller: pIdx });
     });
@@ -489,6 +496,7 @@
       }
       p.hp -= n;
       log(state, (src.name ? src.name + ': ' : '') + p.name + ' получает ' + n + ' урона.');
+      fx(state, { t: 'damage', ref: { kind: 'hero', player: ref.player }, n: n });
       if (p.flags.mirror && !src.mirrored) {
         dealDamage(state, { kind: 'hero', player: 1 - ref.player }, n, { name: 'Резонанс', kind: 'magic', mirrored: true });
       }
@@ -503,6 +511,7 @@
         return cardDef(e.id).abilities.some(function (ab) { return ab.absorbOnce; });
       }).slice(0, 1).forEach(function (e) { removeEnchant(state, e.uid); });
       log(state, cardDef(u.id).name + ': урон поглощён.');
+      fx(state, { t: 'absorb', ref: { kind: 'unit', uid: u.uid } });
       return 0;
     }
     n -= src.kind === 'combat' ? st.flags.combatShield : st.flags.magicShield;
@@ -511,6 +520,7 @@
     u.damagedTurn = state.turn;
     if (src.burnRegen) u.noRegenTurn = true;
     log(state, (src.name ? src.name + ': ' : '') + cardDef(u.id).name + ' получает ' + n + ' урона.');
+    fx(state, { t: 'damage', ref: { kind: 'unit', uid: u.uid }, n: n });
     var dmgRef = { kind: 'unit', uid: u.uid };
     fire(state, 'onEnchantedDamaged', { damage: n }, function (s) { return s.enchantedUid === u.uid; });
     if (src.unit) fire(state, 'onDamageCreature', { damaged: dmgRef }, function (s) { return s.sourceUid === src.unit.uid && !s.ench; });
@@ -523,9 +533,13 @@
       var before = p.hp;
       p.hp = Math.min(p.maxHp, p.hp + n);
       if (p.hp > before) log(state, p.name + ' восстанавливает ' + (p.hp - before) + ' здоровья.');
+      if (p.hp > before) fx(state, { t: 'heal', ref: { kind: 'hero', player: ref.player }, n: p.hp - before });
     } else {
       var u = findUnit(state, ref);
-      if (u) u.damage = Math.max(0, u.damage - n);
+      if (!u) return;
+      var was = u.damage;
+      u.damage = Math.max(0, u.damage - n);
+      if (was > u.damage) fx(state, { t: 'heal', ref: { kind: 'unit', uid: u.uid }, n: was - u.damage });
     }
   }
 
@@ -551,6 +565,7 @@
             u.damage = 0;
             u.doomed = false;
             log(state, cardDef(u.id).name + ' регенерирует (' + cost + ' эфира).');
+            fx(state, { t: 'regen', uid: u.uid });
             fire(state, 'onRegen', {});
             return;
           }
@@ -567,6 +582,7 @@
     var pl = state.players[u.owner], owner = u.origOwner != null ? u.origOwner : u.owner;
     var def = cardDef(u.id), snap = { hp: stats(state, u).hp, atk: stats(state, u).atk };
     pl.field.splice(pl.field.indexOf(u), 1);
+    fx(state, { t: 'death', uid: u.uid, how: how });
     var card = { uid: u.uid, id: u.id };
     if (how === 'die') {
       state.players[owner].graveyard.push(card);
@@ -775,6 +791,7 @@
     p.hand.splice(p.hand.indexOf(c), 1);
     log(state, p.name + ' разыгрывает "' + def.name + '"' + (def.xCost ? ' (X=' + x + ')' : '') +
       (opts.target ? ' → ' + refName(state, opts.target) : '') + '.');
+    fx(state, { t: 'cast', p: pIdx, id: c.id, target: opts.target || null });
     ctx.targetSnap = opts.target && opts.target.kind === 'unit' ? unitSnap(state, findUnit(state, opts.target)) : null;
     if (sacU) { log(state, 'В жертву: ' + cardDef(sacU.id).name + '.'); removeUnit(state, sacU, 'die'); }
 
@@ -837,6 +854,7 @@
     if (cost.once) (src.unit || src.ench).usedTurn = state.turn;
     ctx.targetSnap = opts.target && opts.target.kind === 'unit' ? unitSnap(state, findUnit(state, opts.target)) : null;
     log(state, def.name + ': способность' + (opts.target ? ' → ' + refName(state, opts.target) : '') + '.');
+    fx(state, { t: 'ability', p: pIdx, uid: sourceUid, id: src.id, target: opts.target || null });
     if (sacU) { log(state, 'В жертву: ' + cardDef(sacU.id).name + '.'); removeUnit(state, sacU, 'die'); }
     if (cost.sacrificeSelf && src.unit) removeUnit(state, src.unit, ab.effect === 'fog' ? 'exile' : 'die');
     Ef().run(state, pIdx, def, ab, ctx);
@@ -931,6 +949,20 @@
 
   // ---------- Схватки ----------
 
+  // Предпросмотр схваток (как "Око оракула"): копия состояния после схваток, до конца хода.
+  // attack - uid атакующих, если атака ещё не объявлена (фаза розыгрыша активного игрока).
+  // Возвращает копию или null, если схватки не будет.
+  function previewCombat(state, blocks, attack) {
+    var c = clone(state);
+    c.fx = null;
+    if (attack && (c.phase !== 'main' || !declareAttack(c, c.active, attack).ok)) return null;
+    if (c.phase !== 'block') return null;
+    c.combat.blocks = {};
+    for (var k in blocks || {}) c.combat.blocks[k] = blocks[k];
+    resolveCombat(c);
+    return c;
+  }
+
   function resolveCombat(state) {
     var def = 1 - state.active;
     if (state.fog) { log(state, 'Туман: схватки без урона.'); return; }
@@ -940,16 +972,19 @@
       if (!a) return;
       var b = findUnit(state, state.combat.blocks[aUid]);
       if (b && b.owner !== def) b = null;
-      if (!b) hitHero(state, a, stats(state, a).atk);
+      if (!b) hitHero(state, a, stats(state, a).atk, true);
       else fight(state, a, b);
     });
   }
 
-  function hitHero(state, a, n) {
+  // Урон герою от существа. lunge - отдельный удар (не излишек прорыва)
+  function hitHero(state, a, n, lunge) {
     var target = 1 - a.owner;
+    if (lunge && n > 0) fx(state, { t: 'strike', from: a.uid, to: { kind: 'hero', player: target } });
     var dealt = dealDamage(state, { kind: 'hero', player: target }, n, { name: cardDef(a.id).name, kind: 'combat', unit: a });
     if (!dealt) return;
     var st = stats(state, a);
+    if (st.kw.lifetap) fx(state, { t: 'drain', from: { kind: 'hero', player: target }, to: { kind: 'hero', player: a.owner } });
     if (st.kw.lifetap) heal(state, { kind: 'hero', player: a.owner }, dealt);
     if (st.kw.discard) discard(state, target, st.kw.discard);
     fire(state, 'onHitHero', { hitHero: target }, function (s) { return s.sourceUid === a.uid && !s.ench; });
@@ -960,6 +995,7 @@
     var sx = stats(state, x), n = sx.atk;
     if (n <= 0) return;
     var left = Math.max(0, stats(state, y).hp - y.damage);
+    fx(state, { t: 'strike', from: x.uid, to: { kind: 'unit', uid: y.uid } });
     var dealt = dealDamage(state, { kind: 'unit', uid: y.uid }, n, { name: cardDef(x.id).name, kind: 'combat', unit: x, burnRegen: sx.kw.burnRegen });
     if (dealt > 0) {
       var yWall = cardDef(y.id).race === 'wall', yFly = stats(state, y).kw.flying;
@@ -975,6 +1011,7 @@
 
   function fight(state, a, b) {
     log(state, 'Схватка: ' + cardDef(a.id).name + ' против ' + cardDef(b.id).name + '.');
+    fx(state, { t: 'fight', a: a.uid, b: b.uid });
     if (stats(state, a).kw.disenchant) stripEnchants(state, b);
     if (stats(state, b).kw.disenchant) stripEnchants(state, a);
     var bFirst = stats(state, b).kw.firstStrike && !stats(state, a).kw.firstStrike;
@@ -1055,6 +1092,7 @@
     release: release,
     declareAttack: declareAttack,
     declareBlocks: declareBlocks,
+    previewCombat: previewCombat,
     endTurn: endTurnAction,
     // для effects.js
     log: log,

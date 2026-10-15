@@ -19,12 +19,36 @@
   function esc(s) { return B().esc(s); }
   function svg(p, c) { return B().svg(p, c); }
 
-  // ---------- Масштаб сцены 1280×800 ----------
+  // ---------- Масштаб сцены ----------
+  // Окно шире высоты - сцена 1280×800. Окно выше ширины (телефон) - вертикальная сцена шириной 450 на всю высоту.
+  // Телефон, повёрнутый горизонтально, просят вернуть вертикально.
+
+  var PORTRAIT_W = 450, mode = '';
 
   function fit() {
-    scale = Math.min(window.innerWidth / 1280, window.innerHeight / 800);
+    var app = document.getElementById('app'), w = app.clientWidth || window.innerWidth, h = app.clientHeight || window.innerHeight, body = document.body;
+    var portrait = w < h;
+    var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    body.classList.toggle('vert', portrait);
+    body.classList.toggle('rotate', !portrait && touch && h < 560);
+    if (portrait) {
+      scale = w / PORTRAIT_W;
+      stage.style.width = PORTRAIT_W + 'px';
+      stage.style.height = Math.max(760, Math.round(h / scale)) + 'px';
+    } else {
+      scale = Math.min(w / 1280, h / 800);
+      stage.style.width = '';
+      stage.style.height = '';
+    }
     stage.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
     B().setScale(scale);
+    var m = portrait ? 'portrait' : 'wide';
+    if (mode && m !== mode) {
+      if (B().active()) B().relayout();
+      else if (AD.DeckEditor && AD.DeckEditor.active()) AD.DeckEditor.relayout && AD.DeckEditor.relayout();
+      else render();
+    }
+    mode = m;
   }
 
   function show(name, extra) {
@@ -111,12 +135,17 @@
 
   function mapHtml() {
     var ch = C().chapter(run), W = 1240, H = 470;
+    var vert = document.body.classList.contains('vert');
+    if (vert) { W = 410; H = Math.max(360, stage.offsetHeight - 330); }
     // Узел начала не рисуем: он нужен только логике доступности. Остальные растягиваем на всю ширину
     var shown = ch.nodes.filter(function (n) { return n.type !== 'start'; });
     var xs = shown.map(function (n) { return n.x; }), x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
     var pos = {};
     shown.forEach(function (n) {
-      pos[n.id] = { x: Math.round(90 + (n.x - x0) / ((x1 - x0) || 1) * (W - 180)), y: Math.round(20 + n.y * (H - 40)) };
+      var t = (n.x - x0) / ((x1 - x0) || 1);
+      // вертикально: путь снизу вверх, ветки - по ширине
+      pos[n.id] = vert ? { x: Math.round(50 + n.y * (W - 100)), y: Math.round(H - 50 - t * (H - 100)) }
+        : { x: Math.round(90 + t * (W - 180)), y: Math.round(20 + n.y * (H - 40)) };
     });
     // Тропы - пологие дуги: изгиб поперёк отрезка, направление чередуется
     var lines = ch.edges.filter(function (e) { return pos[e[0]] && pos[e[1]]; }).map(function (e, i) {
@@ -142,7 +171,7 @@
       '<header class="map-head"><div><div class="muted"><span class="ch-dots">' + dots + '</span>Глава ' + (run.chapter + 1) +
       ' из ' + cfg.campaign.chapters.length + ' · ' + C().DIFFICULTY[run.difficulty] + '</div><h2>' + esc(ch.name) + '</h2>' +
       '<p class="muted">' + esc(ch.text) + '</p></div>' + heroBar() + '</header>' +
-      '<div class="map"' + (mapArt ? ' style="background-image:url(' + mapArt + ')"' : '') + '>' +
+      '<div class="map"' + (mapArt || vert ? ' style="' + (mapArt ? 'background-image:url(' + mapArt + ');' : '') + (vert ? 'height:' + H + 'px' : '') + '"' : '') + '>' +
       '<svg class="map-lines" viewBox="0 0 ' + W + ' ' + H + '">' + lines + '</svg>' + nodes + '</div>' +
       '<footer class="map-foot">' + nodeInfo() +
       '<div class="foot-buttons"><button class="ghost" data-act="deck">Колода (' + run.deck.length + ')</button>' +

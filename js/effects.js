@@ -311,6 +311,7 @@
     },
     drainLife: function (s, p, ref, n, ab, ctx) {
       var dealt = E().dealDamage(s, ref, n, { name: ctx.sourceName, kind: 'magic' });
+      if (dealt && s.fx) s.fx.push({ t: 'drain', from: ref, to: { kind: 'hero', player: p } });
       if (dealt) E().heal(s, { kind: 'hero', player: p }, dealt);
     },
     draw: function (s, p, ref, n) { if (ref.kind === 'hero') E().draw(s, ref.player, n); },
