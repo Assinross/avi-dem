@@ -907,7 +907,13 @@
       if (uids && uids.some(function (x) { return bad.indexOf(x) >= 0; })) return fail('Это существо атакует только вместе с сородичем.');
       list = list.filter(function (x) { return bad.indexOf(x) < 0; });
     }
-    var tax = heroMods(state, 1 - pIdx).attackTax * list.length;
+    // берсерки, за которых нечем заплатить налог на атаку, в этот ход не атакуют (иначе ход не завершить)
+    var each = heroMods(state, 1 - pIdx).attackTax;
+    while (each && each * list.length > p.ether && list.some(function (uid) { return (uids || []).indexOf(uid) < 0; })) {
+      var forced = list.filter(function (uid) { return (uids || []).indexOf(uid) < 0; });
+      list.splice(list.indexOf(forced[forced.length - 1]), 1);
+    }
+    var tax = each * list.length;
     if (tax > p.ether) return fail('Атака стоит ' + tax + ' эфира.');
     if (!list.length) {
       log(state, p.name + ' не атакует.');

@@ -686,7 +686,8 @@ button:disabled { opacity: 0.5; cursor: default; }
   border: 2px solid var(--gold-dim); background: var(--bg-deep); color: var(--text-2);
   display: flex; align-items: center; justify-content: center;
 }
-.eye-btn .ico { width: 22px; height: 22px; }
+.eye-btn { touch-action: none; -webkit-touch-callout: none; }
+.eye-btn .ico { width: 22px; height: 22px; pointer-events: none; }
 .eye-btn:hover { color: var(--gold-hi); border-color: var(--gold); }
 .eye-btn.on { border-color: var(--gold); color: var(--bg-deep); background: var(--gold); box-shadow: 0 0 14px var(--gold-soft); }
 .pv-hp {

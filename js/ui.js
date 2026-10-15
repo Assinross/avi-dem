@@ -52,7 +52,7 @@
       aiCount: 0,
       logOpen: loadLogPref(),
       fast: loadPref('avi-dem-fast'),
-      eye: loadPref('avi-dem-eye'),  // предпросмотр итога схваток включён
+      eye: false,         // кнопка предпросмотра итога схваток зажата
       pv: null,           // итог предпросмотра для текущей отрисовки
       playing: false,     // идёт проигрывание анимаций, ввод заблокирован
       lastActive: null,   // чей ход был на прошлой отрисовке (переворот жетона хода)
@@ -406,7 +406,7 @@
     if (ui.sel) extra = '<button class="ghost" data-btn="cancel">Отмена</button>';
     if (part === 'extra') return extra ? '<div class="arena-btns">' + extra + '</div>' : '';
     if (part === 'main') extra = '';
-    var eye = canPreview() ? '<button class="eye-btn' + (ui.eye ? ' on' : '') + '" data-btn="eye" title="Показать итог схваток">' + svg(ICONS.eye) + '</button>' : '';
+    var eye = canPreview() ? '<button class="eye-btn' + (ui.eye ? ' on' : '') + '" data-btn="eye" title="Удерживайте, чтобы увидеть итог схваток">' + svg(ICONS.eye) + '</button>' : '';
     return '<div class="controls">' + extra + '<div class="main-row">' + eye +
       '<button class="end-turn' + (main ? '' : ' wait') + '" data-btn="main"' + (main ? '' : ' disabled') + '>' +
       (main || (S.phase === 'over' ? 'Бой окончен' : 'Ход противника')) + '</button></div></div>';
@@ -612,6 +612,20 @@
     return '<div class="sheet" data-btn="infoclose"><div class="sheet-card">' + cardFull(E().cardDef(ui.info.id), 'big') +
       keywordHelp(ui.info.kw || Ef().parseKeywords(E().cardDef(ui.info.id).keywords)) + '</div>' +
       '<div class="sheet-btns"><button class="ghost" data-btn="infoclose">Закрыть</button></div></div>';
+  }
+
+  // Предпросмотр итога работает, пока кнопка-глаз зажата мышью или пальцем
+  function onEyeDown(ev) {
+    if (!S || ui.playing || !ev.target.closest('[data-btn="eye"]')) return;
+    ev.preventDefault();
+    ui.eye = true;
+    render();
+  }
+
+  function onEyeUp() {
+    if (!ui.eye) return;
+    ui.eye = false;
+    if (S && !ui.playing) render();
   }
 
   // Долгое нажатие на жетон, чары или карту - показать полную карту
@@ -1078,7 +1092,7 @@
     if (name === 'zoomclose') { ui.zoom = null; render(); return; }
     if (name === 'infoclose') { ui.info = null; render(); return; }
     if (name === 'zoomplay') { var zu = ui.zoom; ui.zoom = null; if (zu != null) onHand(zu); else render(); return; }
-    if (name === 'eye') { ui.eye = !ui.eye; savePref('avi-dem-eye', ui.eye); render(); return; }
+    if (name === 'eye') return;
     if (name === 'fast') { ui.fast = !ui.fast; savePref('avi-dem-fast', ui.fast); render(); return; }
     if (name === 'log') { ui.logOpen = !ui.logOpen; saveLogPref(ui.logOpen); render(); return; }
     if (name === 'closegrave') { ui.graveView = null; render(); return; }
@@ -1215,7 +1229,11 @@
       stage.addEventListener('click', onClick);
       stage.addEventListener('contextmenu', onContext);
       stage.addEventListener('mouseover', onOver);
+      stage.addEventListener('pointerdown', onEyeDown);
       stage.addEventListener('pointerdown', onPress);
+      window.addEventListener('pointerup', onEyeUp);
+      window.addEventListener('pointercancel', onEyeUp);
+      window.addEventListener('blur', onEyeUp);
       stage.addEventListener('pointermove', onPressMove);
       stage.addEventListener('pointerup', onPressEnd);
       stage.addEventListener('pointercancel', onPressEnd);

@@ -46,6 +46,31 @@ module.exports = function (t) {
     eq(AI.chooseBlocks(s, 1)[rat.uid], wall.uid);
   });
 
+  test('ИИ добивает: атакует всеми, когда одного блокера мало', function () {
+    var s = game(4);
+    s.players[1].hp = 2;
+    var a = put(s, 0, 'tiwr'), b = put(s, 0, 'tiwr');
+    put(s, 1, 'ember_wall');
+    var list = AI.chooseAttackers(s, 0);
+    ok(list.indexOf(a.uid) >= 0 && list.indexOf(b.uid) >= 0, 'атакуют оба: ' + JSON.stringify(list));
+  });
+
+  test('ИИ не раскрывается под смертельный ответный удар', function () {
+    var s = game(5);
+    s.players[0].hp = 3;
+    put(s, 0, 'tiwr'); put(s, 0, 'tiwr');
+    put(s, 1, 'tiwr'); put(s, 1, 'tiwr'); put(s, 1, 'tiwr');
+    eq(AI.chooseAttackers(s, 0), [], 'держит обоих в защите');
+  });
+
+  test('ИИ жертвует существом, чтобы не погибнуть', function () {
+    var s = game(6);
+    s.players[1].hp = 2;
+    var a = put(s, 0, 'tiwr'), rat = put(s, 1, 'ash_rat');
+    E.declareAttack(s, 0, [a.uid]);
+    eq(AI.chooseBlocks(s, 1)[a.uid], rat.uid);
+  });
+
   test('бои ИИ против ИИ доходят до конца без ошибок', function () {
     var wins = [0, 0, 0];
     for (var seed = 1; seed <= 30; seed++) {

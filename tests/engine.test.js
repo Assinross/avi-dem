@@ -316,4 +316,16 @@ module.exports = function (t) {
     eq(s.turn, 1);
     eq(c.turn, 2);
   });
+
+  test('налог на атаку: берсерк без эфира не мешает завершить ход', function () {
+    var s = game();
+    var b = put(s, 0, 'mcwo');
+    E.attachHero(s, 1, 'lsds', 1);
+    ok(E.heroMods(s, 1).attackTax > 0, 'налог действует');
+    s.players[0].ether = 0;
+    eq(E.declareAttack(E.clone(s), 0, [b.uid]).ok, false, 'выбранный атакующий без эфира - нельзя');
+    var r = E.declareAttack(s, 0, []);
+    ok(r.ok, 'ход завершается: ' + (r.error || ''));
+    eq(s.combat, null, 'берсерк не атакует');
+  });
 };
