@@ -162,7 +162,7 @@
       var m = n.monster ? C().monster(n.monster) : null;
       return '<button class="node ' + n.type + ' ' + st + (view.selected === n.id ? ' selected' : '') +
         (m ? ' el-' + m.element : '') + '" data-node="' + n.id + '" style="left:' + p.x + 'px;top:' + p.y + 'px">' +
-        svg(NODE_ICONS[n.type], 'node-ico') + (m ? '<span class="node-lv">' + C().monsterLevel(run) + '</span>' : '') +
+        svg(NODE_ICONS[n.type], 'node-ico') + (m ? '<span class="node-lv">' + C().monsterLevel(run, n) + '</span>' : '') +
         '<span class="node-label">' + esc(m ? m.name : NODE_NAMES[n.type]) + '</span></button>';
     }).join('');
     return '<div class="map-screen">' +
@@ -181,12 +181,12 @@
   function nodeInfo() {
     var n = view.selected ? C().node(run, view.selected) : null;
     if (!n) return '<div class="node-info muted">Выберите узел на карте. Доступны узлы рядом с пройденными. ' +
-      'Враги и страж рубежа всегда вашего уровня и с вашим здоровьем.</div>';
+      'Враги и страж рубежа всегда вашего уровня и с вашим здоровьем. Финальный страж - всегда 12 уровня.</div>';
     var st = nodeState(n), body = '', btn = '';
     if (n.monster) {
-      var m = C().monster(n.monster), lv = C().monsterLevel(run);
+      var m = C().monster(n.monster), lv = C().monsterLevel(run, n);
       body = '<h3>' + esc(m.name) + '</h3>' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + lv +
-        ' · здоровье ' + C().monsterHp(run) + ' · опыт +' + C().xpForMonster(lv) +
+        ' · здоровье ' + C().monsterHp(run, n) + ' · опыт +' + C().xpForMonster(lv) +
         (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '');
       if (st === 'available') btn = '<button class="end-turn" data-act="fight">В бой</button>';
     } else if (n.type === 'reward') {

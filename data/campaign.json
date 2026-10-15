@@ -636,6 +636,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_grdg",
+     "level": 12,
      "boss": [
       {
        "trigger": "startOfTurn",

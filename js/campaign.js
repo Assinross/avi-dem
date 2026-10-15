@@ -93,25 +93,25 @@
 
   // ---------- Сила монстра: всегда по уровню героя ----------
 
-  // Здоровье героя в бою (с навыком "Усиленный организм")
-  function heroHp(run) {
-    var hp = AD.Engine.heroHp(run.level);
+  // Здоровье героя в бою (с навыком "Усиленный организм"), level - вместо уровня героя
+  function heroHp(run, level) {
+    var hp = AD.Engine.heroHp(level || run.level);
     if (run.skills.HEAL) hp = Math.round(hp * (1 + 0.1 * run.skills.HEAL));
     return hp;
   }
 
-  // Монстр и страж - того же уровня, что герой сейчас
-  function monsterLevel(run) { return run.level; }
+  // Монстр и страж - того же уровня, что герой сейчас, если у узла не задан свой уровень
+  function monsterLevel(run, n) { return (n && n.level) || run.level; }
 
   // Здоровье монстра: как у героя, сложность сдвигает от "Обычной"
-  function monsterHp(run) {
-    return Math.max(1, Math.round(heroHp(run) * (HP_BY_DIFFICULTY[run.difficulty] || 1)));
+  function monsterHp(run, n) {
+    return Math.max(1, Math.round(heroHp(run, monsterLevel(run, n)) * (HP_BY_DIFFICULTY[run.difficulty] || 1)));
   }
 
   // Колода монстра: его собственные карты (из всех вариантов) повторами до размера колоды героя,
   // с ростом уровня часть мест - карты его стихии, тем сильнее, чем выше уровень
-  function monsterDeck(run, m, seed) {
-    var p = data.progression, lv = monsterLevel(run), rng = { seed: seed | 0 };
+  function monsterDeck(run, n, seed) {
+    var m = monster(n.monster), p = data.progression, lv = monsterLevel(run, n), rng = { seed: seed | 0 };
     var size = Math.min(p.deckMax, Math.max(p.deckMin, run.deck.length));
     var own = [];
     m.variants.forEach(function (v) { v.deck.forEach(function (id) { if (own.indexOf(id) < 0) own.push(id); }); });
@@ -140,8 +140,8 @@
       players: [
         { name: run.heroName, element: run.element, level: run.level, deck: run.deck.slice(), skills: run.skills,
           art: 'heroes/' + data.races[run.element].faction },
-        { name: m.name + (n.type === 'gate' ? ' (страж)' : ''), element: m.element, level: monsterLevel(run), hp: monsterHp(run),
-          deck: monsterDeck(run, m, seed), skills: v.skills, passives: n.boss || [], art: monsterArt(m) }
+        { name: m.name + (n.type === 'gate' ? ' (страж)' : ''), element: m.element, level: monsterLevel(run, n), hp: monsterHp(run, n),
+          deck: monsterDeck(run, n, seed), skills: v.skills, passives: n.boss || [], art: monsterArt(m) }
       ]
     };
   }
@@ -198,7 +198,7 @@
   // Итог боя
   function battleResult(run, nodeId, won) {
     if (!won) { run.stats.losses++; return; }
-    var n = node(run, nodeId), gain = xpForMonster(monsterLevel(run));
+    var n = node(run, nodeId), gain = xpForMonster(monsterLevel(run, n));
     run.stats.wins++;
     run.xp += gain;
     var before = run.level;

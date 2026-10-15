@@ -17,8 +17,8 @@ module.exports = function (t) {
         run.chapter = i;
         ch.nodes.filter(function (n) { return n.monster; }).forEach(function (n) {
           var foe = C.battleSetup(run, n.id).players[1], me = C.battleSetup(run, n.id).players[0];
-          eq(foe.level, lv, n.monster + ': уровень');
-          eq(foe.hp, C.heroHp(run), n.monster + ': здоровье');
+          eq(foe.level, n.level || lv, n.monster + ': уровень');
+          eq(foe.hp, C.heroHp(run, n.level), n.monster + ': здоровье');
           eq(foe.deck.length, me.deck.length, n.monster + ': размер колоды');
           ok(d.monsters[n.monster].variants[0].deck.every(function (id) { return foe.deck.indexOf(id) >= 0; }), n.monster + ': свои карты');
         });
@@ -47,6 +47,17 @@ module.exports = function (t) {
     Object.keys(d.races).forEach(function (el) {
       var run = C.newRun(el, 0, 1);
       eq(C.validateDeck(run, run.deck), null, el + ': стартовая колода');
+    });
+  });
+
+  test('финальный страж кампании - всегда 12 уровня', function () {
+    var run = C.newRun('life', 1, 3), last = d.campaign.chapters.length - 1;
+    run.chapter = last;
+    [1, 9, 13].forEach(function (lv) {
+      run.level = lv;
+      var foe = C.battleSetup(run, 'gate').players[1];
+      eq(foe.level, 12, 'уровень финала при герое ' + lv);
+      eq(foe.hp, AD.Engine.heroHp(12), 'здоровье финала при герое ' + lv);
     });
   });
 
