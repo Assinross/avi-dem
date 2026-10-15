@@ -31,6 +31,28 @@ module.exports = function (t) {
     ok(a && a.opts.target && a.opts.target.kind === 'hero' && a.opts.target.player === 1, 'цель - герой врага');
   });
 
+  test('ИИ снимает платные чары с крупного существа', function () {
+    var s = game(3);
+    var u = put(s, 0, 'stab');
+    u.rested = true;
+    u.enchants.push({ uid: s.seq++, id: 'immb', owner: 1, x: 0, usedTurn: 0 });
+    s.players[0].ether = 2;
+    s.players[0].hand = [];
+    var a = AI.nextAction(s, 0);
+    ok(a && a.type === 'release', 'снятие чар');
+    ok(AI.apply(s, 0, a).ok && !u.rested, 'существо поднялось');
+  });
+
+  test('ИИ не платит за снятие чар с мелкого существа', function () {
+    var s = game(4);
+    var u = put(s, 0, 'ash_rat');
+    u.rested = true;
+    u.enchants.push({ uid: s.seq++, id: 'immb', owner: 1, x: 0, usedTurn: 0 });
+    s.players[0].ether = 2;
+    s.players[0].hand = [];
+    eq(AI.nextAction(s, 0), null);
+  });
+
   test('ИИ не атакует в заведомо проигрышный блок', function () {
     var s = game(2);
     var rat = put(s, 0, 'ash_rat');

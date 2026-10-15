@@ -16,21 +16,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_batt"
+     "monster": "m_batt",
+     "level": 1
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_drat"
+     "monster": "m_drat",
+     "level": 1
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_gbbr"
+     "monster": "m_gbbr",
+     "level": 1
     },
     {
      "id": "r1",
@@ -49,14 +52,16 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_tnsa"
+     "monster": "m_tnsa",
+     "level": 2
     },
     {
      "id": "b5",
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_mcwo"
+     "monster": "m_mcwo",
+     "level": 2
     },
     {
      "id": "gate",
@@ -64,6 +69,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_orgd",
+     "level": 3,
      "boss": [
       {
        "trigger": "startOfTurn",
@@ -129,21 +135,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_prat"
+     "monster": "m_prat",
+     "level": 3
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_sehl"
+     "monster": "m_sehl",
+     "level": 4
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_brab"
+     "monster": "m_brab",
+     "level": 4
     },
     {
      "id": "r1",
@@ -162,14 +171,16 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_kbgd"
+     "monster": "m_kbgd",
+     "level": 5
     },
     {
      "id": "b5",
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_lasn"
+     "monster": "m_lasn",
+     "level": 5
     },
     {
      "id": "gate",
@@ -177,6 +188,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_grog",
+     "level": 5,
      "boss": [
       {
        "trigger": "startOfTurn",
@@ -242,21 +254,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_mxhp"
+     "monster": "m_mxhp",
+     "level": 5
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_wzsp"
+     "monster": "m_wzsp",
+     "level": 6
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_myho"
+     "monster": "m_myho",
+     "level": 6
     },
     {
      "id": "r1",
@@ -275,21 +290,24 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_vbat"
+     "monster": "m_vbat",
+     "level": 6
     },
     {
      "id": "b5",
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_ctmn"
+     "monster": "m_ctmn",
+     "level": 7
     },
     {
      "id": "b6",
      "x": 0.795,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_pale_watch"
+     "monster": "m_pale_watch",
+     "level": 7
     },
     {
      "id": "gate",
@@ -297,6 +315,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_orel",
+     "level": 7,
      "boss": [
       {
        "trigger": "startOfTurn",
@@ -366,21 +385,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_irmz"
+     "monster": "m_irmz",
+     "level": 8
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_bhwr"
+     "monster": "m_bhwr",
+     "level": 8
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_frel"
+     "monster": "m_frel",
+     "level": 8
     },
     {
      "id": "r1",
@@ -399,14 +421,16 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_mlfi"
+     "monster": "m_mlfi",
+     "level": 9
     },
     {
      "id": "b5",
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_pale_reaper"
+     "monster": "m_pale_reaper",
+     "level": 9
     },
     {
      "id": "gate",
@@ -414,6 +438,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_bhmo",
+     "level": 9,
      "boss": [
       {
        "trigger": "startOfTurn",
@@ -479,21 +504,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_ogkn"
+     "monster": "m_ogkn",
+     "level": 9
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_erel"
+     "monster": "m_erel",
+     "level": 9
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_pale_knight"
+     "monster": "m_pale_knight",
+     "level": 9
     },
     {
      "id": "r1",
@@ -512,7 +540,8 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_lmwd"
+     "monster": "m_lmwd",
+     "level": 9
     },
     {
      "id": "gate",
@@ -520,6 +549,7 @@
      "y": 0.5,
      "type": "gate",
      "monster": "m_wkhr",
+     "level": 10,
      "boss": [
       {
        "trigger": "startOfTurn",
@@ -581,21 +611,24 @@
      "x": 0.207,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_kbsh"
+     "monster": "m_kbsh",
+     "level": 11
     },
     {
      "id": "b2",
      "x": 0.354,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_stmz"
+     "monster": "m_stmz",
+     "level": 11
     },
     {
      "id": "b3",
      "x": 0.354,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_rzmn2"
+     "monster": "m_rzmn2",
+     "level": 11
     },
     {
      "id": "r1",
@@ -614,21 +647,24 @@
      "x": 0.648,
      "y": 0.5,
      "type": "battle",
-     "monster": "m_wlbl"
+     "monster": "m_wlbl",
+     "level": 11
     },
     {
      "id": "b5",
      "x": 0.795,
      "y": 0.2,
      "type": "battle",
-     "monster": "m_pale_choir"
+     "monster": "m_pale_choir",
+     "level": 12
     },
     {
      "id": "b6",
      "x": 0.795,
      "y": 0.8,
      "type": "battle",
-     "monster": "m_budg"
+     "monster": "m_budg",
+     "level": 12
     },
     {
      "id": "gate",

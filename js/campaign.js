@@ -8,6 +8,8 @@
 
   // Здоровье монстра относительно героя по сложности ("Обычная" - ровно как у героя)
   var HP_BY_DIFFICULTY = [0.8, 1, 1.15, 1.3, 1.5];
+  // Рост здоровья монстра по главам (как в оригинале: под конец враги заметно крепче героя)
+  var HP_BY_CHAPTER = { battle: [1, 1, 1.1, 1.2, 1.35, 1.5], gate: [1, 1.05, 1.15, 1.3, 1.45, 1.6] };
 
   // События: усиления героя (навыки оригинала)
   var SKILLS = {
@@ -81,9 +83,15 @@
     return chapter(run).nodes.filter(function (n) { return n.id === id; })[0];
   }
 
-  // Доступен ли узел: не пройден и соседствует с пройденным
+  // Сколько боёв главы ещё не пройдено (страж открывается, когда побеждены все)
+  function battlesLeft(run) {
+    return chapter(run).nodes.filter(function (n) { return n.type === 'battle' && !run.cleared[n.id]; }).length;
+  }
+
+  // Доступен ли узел: не пройден и соседствует с пройденным; страж - только после всех боёв главы
   function isAvailable(run, id) {
     if (run.cleared[id] || run.pending || run.done) return false;
+    if (node(run, id).type === 'gate' && battlesLeft(run)) return false;
     return chapter(run).edges.some(function (e) {
       return (e[0] === id && run.cleared[e[1]]) || (e[1] === id && run.cleared[e[0]]);
     });
@@ -91,7 +99,7 @@
 
   function monster(id) { return data.monsters[id]; }
 
-  // ---------- Сила монстра: всегда по уровню героя ----------
+  // ---------- Сила монстра: по уровню узла, заранее рассчитанному под опыт героя ----------
 
   // Здоровье героя в бою (с навыком "Усиленный организм"), level - вместо уровня героя
   function heroHp(run, level) {
@@ -100,12 +108,18 @@
     return hp;
   }
 
-  // Монстр и страж - того же уровня, что герой сейчас, если у узла не задан свой уровень
-  function monsterLevel(run, n) { return (n && n.level) || run.level; }
+  // Уровень монстра задан в узле (к стражу главы герой подходит его уровня), иначе - уровень монстра
+  function monsterLevel(run, n) { return (n && (n.level || (n.monster && monster(n.monster).level))) || run.level; }
 
-  // Здоровье монстра: как у героя, сложность сдвигает от "Обычной"
+  // Множитель здоровья монстра от главы: стражи чуть крепче обычных боёв
+  function chapterHpScale(run, n) {
+    var row = HP_BY_CHAPTER[n && n.type === 'gate' ? 'gate' : 'battle'];
+    return row[Math.min(run.chapter, row.length - 1)];
+  }
+
+  // Здоровье монстра: как у героя его уровня, растёт по главам, сложность сдвигает от "Обычной"
   function monsterHp(run, n) {
-    return Math.max(1, Math.round(heroHp(run, monsterLevel(run, n)) * (HP_BY_DIFFICULTY[run.difficulty] || 1)));
+    return Math.max(1, Math.round(heroHp(run, monsterLevel(run, n)) * chapterHpScale(run, n) * (HP_BY_DIFFICULTY[run.difficulty] || 1)));
   }
 
   // Колода монстра: его собственные карты (из всех вариантов) повторами до размера колоды героя,
@@ -117,6 +131,7 @@
     m.variants.forEach(function (v) { v.deck.forEach(function (id) { if (own.indexOf(id) < 0) own.push(id); }); });
     var filler = playableCards(m.element).filter(function (c) { return own.indexOf(c.id) < 0; });
     var nFill = filler.length ? Math.max(size - own.length * p.maxCopies, Math.min(Math.floor(size / 2), lv - 1)) : 0;
+    nFill = Math.max(0, Math.min(nFill, size - own.length));  // каждая своя карта - хотя бы раз
     var deck = [];
     for (var i = 0; deck.length < size - nFill && i < size * p.maxCopies; i++) {
       var id = own[i % own.length];
@@ -266,7 +281,9 @@
     monster: monster,
     heroHp: heroHp,
     monsterLevel: monsterLevel,
+    battlesLeft: battlesLeft,
     monsterHp: monsterHp,
+    chapterHpScale: chapterHpScale,
     monsterDeck: monsterDeck,
     isAvailable: isAvailable,
     battleSetup: battleSetup,

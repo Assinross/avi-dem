@@ -23,6 +23,7 @@
     if (kw.lifetap) v += 0.5;
     if (kw.regen) v += 1;
     def.abilities.forEach(function (ab) { if (ab.trigger === 'activated') v += 1.5; });
+    if (u.rested && kw.noUntap) v *= 0.4;  // лежит и сам не встанет - почти бесполезно
     return u.pale ? v * 0.35 : v;
   }
 
@@ -90,10 +91,17 @@
         });
       });
     });
+    // снять со своих существ платные чары (паралич и т.п.)
+    p.field.forEach(function (u) {
+      u.enchants.forEach(function (e) {
+        if (E().cardDef(e.id).release) out.push({ type: 'release', uid: e.uid });
+      });
+    });
     return out;
   }
 
   function apply(state, me, a) {
+    if (a.type === 'release') return E().release(state, me, a.uid);
     if (a.type === 'play') return E().playCard(state, me, a.uid, a.opts);
     return E().activate(state, me, a.uid, a.idx, a.opts);
   }

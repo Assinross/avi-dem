@@ -181,13 +181,14 @@
   function nodeInfo() {
     var n = view.selected ? C().node(run, view.selected) : null;
     if (!n) return '<div class="node-info muted">Выберите узел на карте. Доступны узлы рядом с пройденными. ' +
-      'Враги и страж рубежа всегда вашего уровня и с вашим здоровьем. Финальный страж - всегда 12 уровня.</div>';
+      'Страж рубежа открывается, когда побеждены все монстры главы; к нему вы подойдёте его уровня.</div>';
     var st = nodeState(n), body = '', btn = '';
     if (n.monster) {
       var m = C().monster(n.monster), lv = C().monsterLevel(run, n);
       body = '<h3>' + esc(m.name) + '</h3>' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + lv +
         ' · здоровье ' + C().monsterHp(run, n) + ' · опыт +' + C().xpForMonster(lv) +
-        (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '');
+        (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '') +
+        (n.type === 'gate' && C().battlesLeft(run) ? '<br><span class="warn">Сначала победите всех монстров главы (осталось ' + C().battlesLeft(run) + ').</span>' : '');
       if (st === 'available') btn = '<button class="end-turn" data-act="fight">В бой</button>';
     } else if (n.type === 'reward') {
       body = '<h3>Тайник</h3>Выбор одной из трёх редких карт вашей фракции.';
