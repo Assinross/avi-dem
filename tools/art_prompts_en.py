@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Короткие английские описания для генератора картинок (пока только Пограничный Союз).
+"""Короткие английские описания для генератора картинок (Пограничный Союз и Кланы Перелома).
 
 Читает art_inbox/prompts.json (его пишет tools/art_prompts.py) и добавляет поле prompt_en
-для карт, лидера и фона Союза. Генераторы лучше понимают английский, а в коротком описании
+для карт, лидера и фона Союза и Кланов. Генераторы лучше понимают английский, а в коротком описании
 один сюжет не тонет в перечне всей техники фракции.
 
 Запуск: python3 tools/art_prompts_en.py
@@ -119,6 +119,113 @@ FIELD = ('Wide 16:9 panoramic landscape with no characters: a frontier mining co
          '(cards will lie there), details and light are near the edges.')
 
 
+# ---------- Кланы Перелома ----------
+
+CLANS = ('Mutant clans of broken worlds: humanoid mutants and mutated beasts, scars, bone plates, crude armor of salvaged '
+         'metal and leather, cloth wrappings, green and violet crystal growths in the skin. '
+         'Palette dark green, graphite, violet accents.')
+
+# Для заклинаний и чар - без существ, только материалы и палитра
+CLANS_LOOK_SPELL = ('Materials of a broken world: salvaged scrap metal, bone, green and violet crystals. '
+                    'Palette dark green, graphite, violet accents.')
+
+CLANS_BACKDROP = ('Background: a shattered wasteland of a broken world, cracked ground, slag and machine wreckage, '
+                  'green crystal outcrops, ash sky in violet haze, dark, muted and slightly blurred so it does not '
+                  'compete with the subject.')
+
+CLANS_LIGHT = 'Red rim light accents of chaos energy.'
+
+CLANS_TRIBE = {
+    'rat': 'a mutated rat the size of a dog with bony growths and green crystals sprouting from its fur',
+    'goblin': 'a scrawny small mutant scavenger wrapped in cloth strips and plates of salvaged scrap metal',
+    'orc': 'a massive humanoid mutant brute with bone plates on the shoulders and crude armor of salvaged metal and leather',
+    'bat': 'a winged mutant flyer with leathery membrane wings and crystal growths along its spine',
+    'wolf': 'a mutated hound with a bony ridge along its back and glowing eyes',
+    'ogre': 'a giant humanoid mutant in crude armor patched together from wrecked machine parts',
+    'cyclops': 'a colossal one-eyed mutant giant with green and violet crystals growing out of its shoulders',
+}
+
+CLANS_WALL = {
+    'ember_wall': 'a rough wall of black slag blocks with embers glowing in the cracks',
+    'slwl': 'a wall of jagged flint stones bound together with chains and bones',
+    'magma_barrier': 'a barrier of cooling magma with glowing red seams, hovering above the ground',
+    'basalt_wall': 'a massive wall of dark basalt columns',
+    'wllv': 'a wall of molten lava churning and pouring in the air above the ground',
+    'wlif': 'a wall of crackling green-violet plasma stretched between crystal spikes, hovering above the ground',
+}
+
+CLANS_CREATURE = {
+    'kbgd': 'standing guard with a scrap shield and a lantern', 'sparker': 'holding a crackling spark thrower made of junk, electric arcs',
+    'kbwr': 'swinging a crude scrap-metal cleaver', 'kbel': 'an old hunched elder with a staff hung with trophy trinkets',
+    'dusk_pup': 'young and lean, half hidden in dusk shadows', 'ghost_wolf': 'semi-translucent ghostly outline, pale glowing eyes',
+    'ash_rat': 'covered in grey ash', 'drat': 'pale, digging through a grave of rubble',
+    'prat': 'diseased, oozing green, sickly glow', 'dmrt': 'a large scarred rat leader with a crown of crystals, small rats around it',
+    'flame_priest': 'a rift shaman in ragged robes with ritual scars, holding a glowing green crystal staff',
+    'orgd': 'holding a heavy scrap tower shield', 'orwr': 'swinging two crude axes',
+    'orel': 'a chieftain with a horned bone helm and a trophy-hung banner',
+    'ash_bat': 'covered in ash', 'bloodwing': 'dark red wings and bloody claws', 'vbat': 'huge, drinking glowing blood',
+    'ash_ogre': 'covered in ash and soot', 'ogkn': 'an overlord with a huge hammer and a throne-like back plate',
+    'fire_titan': 'towering over ruins, its eye glowing red',
+}
+
+CLANS_SCENE = {
+    'brot': 'a ritual pyre of bones and scrap erupting into a column of fire',
+    'baso': 'thorny crystal spikes wrapped around glowing ghostly wisps rising from the ground',
+    'onslaught': 'a jagged scrap-metal spearhead glowing red, motion streaks surging forward',
+    'war_cry': 'a bone war horn hung with trophies, red rings of sound bursting from it',
+    'tempering': 'a red hot crude armor plate being hammered on an anvil, sparks',
+    'mnbn': 'violet ether flames searing a cracked crystal',
+    'riot': 'shattered chains around a smouldering red sigil of a broken circle',
+    'rnst': 'a rain of falling stones and burning rocks from a dark sky',
+    'smok': 'thick black smog creeping over the ground, swallowing everything',
+    'flame_fury': 'a vial of glowing green mutagen cracking open, power bursting out in green veins of light',
+    'smolder': 'a smouldering bone crumbling into embers and ash',
+    'blkd': 'a ring of crude scrap barricades and spiked shields, a fortified camp',
+    'burning_orb': 'a floating sphere of fire with orbiting embers',
+    'imml': 'a glowing red war mask of bone and crystal, an aura of battle madness',
+    'mnbr': 'a light wind of glowing violet ether particles swirling over the wasteland',
+    'mnst': 'a violent storm of violet ether, lightning and swirling energy vortices',
+    'anhl': 'a blinding white-red explosion wiping out everything, a shockwave ring',
+    'asst': 'a wall of ash storm swallowing the battlefield',
+    'lightning': 'a red lightning bolt striking down from dark clouds',
+    'falling_star': 'a burning piece of orbital debris falling from the sky like a meteor',
+    'dsig': 'matter disintegrating into a swirl of dust and red glowing particles',
+    'mnvr': 'a whirlwind vortex of violet ether energy spinning upward',
+    'plmr': 'a cocoon of green light cracking open, a new flame of life rising from ashes',
+    'wnfl': 'a fiery wind sweeping across the sky, burning winged shapes',
+    'spark': 'a single bright red spark flying through the dark',
+    'ctst': 'a cataclysm: the ground cracking, fire bursting from fissures, ruins collapsing',
+    'erqa': 'an earthquake splitting the ground, rocks heaving up',
+    'flic': 'a long tongue of flame licking and burning a glowing magic sigil',
+    'fire_wave': 'a low wave of fire rolling across the ground',
+    'geys': 'a geyser of glowing violet ether erupting from a crack in the ground',
+    'thunderstorm': 'a thunderstorm, many red lightning bolts hitting the ground',
+    'tremor': 'shockwaves rippling through the ground, cracks spreading',
+    'whas': 'a whirlwind of ash tearing apart a glowing magic sigil',
+    'brgr': 'graves bursting into flames in a wasteland graveyard, burning bones',
+    'cnbl': 'glowing green streams of life essence spiraling into a bone vessel',
+    'snov': 'a blinding supernova burst, a star of fire exploding',
+    'etch': 'two crystal shards linked by a resonating violet energy beam, waves of pain echoing between them',
+    'frst': 'a firestorm, swirling pillars of flame',
+    'rift': 'a jagged rift tearing open in reality, red light pouring from the crack',
+    'volc': 'an erupting volcano, rivers of lava and glowing ether',
+}
+
+CLANS_LEADER = ('Square 1:1 close-up portrait, head and shoulders: an original humanoid mutant warlord, asymmetric features, '
+                'rough dark armor of salvaged metal and bone plates, a staff topped with a green crystal, a few violet '
+                'mineral growths on the skin, stern but intelligent face, wasteland and ash haze behind.')
+
+CLANS_FIELD = ('Wide 16:9 panoramic landscape with no characters: a shattered wasteland of a broken world, cracked ground, '
+               'slag and machine wreckage, green crystal outcrops, ash sky in violet haze. The center of the image is calm '
+               'and dark (cards will lie there), details and light are near the edges.')
+
+# Набор описаний фракции: стиль, фон, свет, породы, стены, уточнения существ, сюжеты заклинаний
+PACKS = {
+    'frontier_union': dict(look=UNION, backdrop=BACKDROP, light=LIGHT, tribe=TRIBE, wall=WALL, creature=CREATURE, scene=SCENE),
+    'fracture_clans': dict(look=CLANS, look_spell=CLANS_LOOK_SPELL, backdrop=CLANS_BACKDROP, light=CLANS_LIGHT, tribe=CLANS_TRIBE, wall=CLANS_WALL,
+                           creature=CLANS_CREATURE, scene=CLANS_SCENE),
+}
+
 # Карты глав кампании (фон экрана карты), по порядку глав
 MAP = [
     'an ash wasteland: cracked grey earth, fissures glowing red with embers, skeletal ruins of broken towers, ash dunes',
@@ -133,29 +240,30 @@ MAP_SHOT = ('Wide panoramic landscape seen from above at an angle, like a campai
             'runs across the middle, the middle area is dark and calm (map markers will sit there), light and detail near the edges.')
 
 
-def card(c):
+def card(c, pk):
     if c['type'] == 'creature':
         if c.get('race') == 'wall':
-            subject = WALL[c['id']] + ', seen in perspective on the battlefield'
+            subject = pk['wall'][c['id']] + ', seen in perspective on the battlefield'
         else:
             size = 'huge, filling most of the frame' if c['cost'] >= 7 else ('large' if c['cost'] >= 4 else 'small')
             cues = [KEYWORD[k.split(':')[0]] for k in c.get('keywords', []) if k.split(':')[0] in KEYWORD]
-            note = CREATURE.get(c['id'], '').rstrip(',')
-            subject = TRIBE[c['race']] + (', ' + note if note else '') + ', ' + size
+            note = pk['creature'].get(c['id'], '').rstrip(',')
+            subject = pk['tribe'][c['race']] + (', ' + note if note else '') + ', ' + size
             if cues:
                 subject += ', ' + ', '.join(cues)
             subject += ('. Shot: the creature in action in its environment (running, attacking, flying), not posing; '
                         'head and main silhouette centered')
         fmt = 'Vertical 3:4 portrait format.'
     else:
-        subject = SCENE[c['id']]
+        subject = pk['scene'][c['id']]
         if c['type'] == 'sorcery':
-            subject += '. Shot: the moment of the effect up close (flash, wave, rupture), at most one figure in the background'
+            subject += '. Shot: the effect itself up close as a striking image or symbol (flash, wave, rupture), no creatures, no characters, no people, no monsters'
         else:
-            subject += '. Shot: an object, aura or glowing symbol large in the center, almost abstract composition'
+            subject += '. Shot: an object, aura or glowing symbol large in the center, almost abstract composition, no creatures, no characters, no people, no monsters'
         fmt = 'Vertical 3:4 portrait format.'
     # Сюжет первым: генератор сильнее всего слушается начала описания
-    return ' '.join([subject[0].upper() + subject[1:] + '.', STYLE, UNION, BACKDROP, LIGHT, fmt])
+    look = pk['look'] if c['type'] == 'creature' else pk.get('look_spell', pk['look'])
+    return ' '.join([subject[0].upper() + subject[1:] + '.', STYLE, look, pk['backdrop'], pk['light'], fmt])
 
 
 def main():
@@ -171,8 +279,12 @@ def main():
         elif fid.startswith('map_'):
             x['prompt_en'] = ' '.join([MAP[int(fid[4:]) - 1][0].upper() + MAP[int(fid[4:]) - 1][1:] + '.', MAP_SHOT,
                                        STYLE.replace('clear readable silhouette, ', ''), LIGHT])
-        elif cards.get(fid, {}).get('faction') == 'frontier_union':
-            x['prompt_en'] = card(cards[fid])
+        elif fid == 'leader_fracture_clans':
+            x['prompt_en'] = ' '.join([STYLE, CLANS, CLANS_LEADER, CLANS_BACKDROP])
+        elif fid == 'bg_fracture_clans':
+            x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), CLANS, CLANS_FIELD])
+        elif cards.get(fid, {}).get('faction') in PACKS:
+            x['prompt_en'] = card(cards[fid], PACKS[cards[fid]['faction']])
         else:
             continue
         n += 1
