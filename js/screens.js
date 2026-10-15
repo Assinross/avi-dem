@@ -102,7 +102,7 @@
     return '<div class="newgame"><h2 class="screen-title">Выберите фракцию</h2>' +
       '<div class="factions">' + factions + '</div>' +
       '<div class="diffs"><span>Сложность:</span>' + diffs + '</div>' +
-      '<p class="muted center">Сложность меняет здоровье, колоды и навыки врагов, как в оригинале.</p>' +
+      '<p class="muted center">Враги всегда вашего уровня. Сложность меняет их здоровье: от 80% вашего до 150%, на "Обычной" - как у вас.</p>' +
       '<div class="row-buttons"><button class="ghost" data-act="menu">Назад</button>' +
       '<button class="end-turn" data-act="start">Начать кампанию</button></div></div>';
   }
@@ -122,9 +122,7 @@
   }
 
   function heroHpNow() {
-    var hp = AD.Engine.heroHp(run.level);
-    if (run.skills.HEAL) hp = Math.round(hp * (1 + 0.1 * run.skills.HEAL));
-    return hp;
+    return C().heroHp(run);
   }
 
   function nodeState(n) {
@@ -164,7 +162,7 @@
       var m = n.monster ? C().monster(n.monster) : null;
       return '<button class="node ' + n.type + ' ' + st + (view.selected === n.id ? ' selected' : '') +
         (m ? ' el-' + m.element : '') + '" data-node="' + n.id + '" style="left:' + p.x + 'px;top:' + p.y + 'px">' +
-        svg(NODE_ICONS[n.type], 'node-ico') + (m ? '<span class="node-lv">' + m.level + '</span>' : '') +
+        svg(NODE_ICONS[n.type], 'node-ico') + (m ? '<span class="node-lv">' + C().monsterLevel(run) + '</span>' : '') +
         '<span class="node-label">' + esc(m ? m.name : NODE_NAMES[n.type]) + '</span></button>';
     }).join('');
     return '<div class="map-screen">' +
@@ -183,14 +181,13 @@
   function nodeInfo() {
     var n = view.selected ? C().node(run, view.selected) : null;
     if (!n) return '<div class="node-info muted">Выберите узел на карте. Доступны узлы рядом с пройденными. ' +
-      'Если зачистить всю главу, к рубежу вы придёте ровно уровнем стража.</div>';
+      'Враги и страж рубежа всегда вашего уровня и с вашим здоровьем.</div>';
     var st = nodeState(n), body = '', btn = '';
     if (n.monster) {
-      var m = C().monster(n.monster), v = m.variants[run.difficulty] || m.variants[0];
-      body = '<h3>' + esc(m.name) + '</h3>' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + m.level +
-        ' · здоровье ' + v.hp + ' · опыт +' + C().xpForMonster(m.level) +
-        (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '') +
-        (m.level > run.level ? '<br><span class="warn">Враг сильнее вас по уровню.</span>' : '');
+      var m = C().monster(n.monster), lv = C().monsterLevel(run);
+      body = '<h3>' + esc(m.name) + '</h3>' + B().ELEMENT_NAMES[m.element] + ' · уровень ' + lv +
+        ' · здоровье ' + C().monsterHp(run) + ' · опыт +' + C().xpForMonster(lv) +
+        (n.type === 'gate' ? '<br><span class="warn">Страж рубежа: усиливается особыми силами. Победа открывает следующую главу.</span>' : '');
       if (st === 'available') btn = '<button class="end-turn" data-act="fight">В бой</button>';
     } else if (n.type === 'reward') {
       body = '<h3>Тайник</h3>Выбор одной из трёх редких карт вашей фракции.';

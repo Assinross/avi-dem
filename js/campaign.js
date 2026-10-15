@@ -6,6 +6,9 @@
 
   var DIFFICULTY = ['Лёгкая', 'Обычная', 'Трудная', 'Эксперт', 'Невозможная'];
 
+  // Здоровье монстра относительно героя по сложности ("Обычная" - ровно как у героя)
+  var HP_BY_DIFFICULTY = [0.8, 1, 1.15, 1.3, 1.5];
+
   // События: усиления героя (навыки оригинала)
   var SKILLS = {
     HEAL: { name: 'Усиленный организм', text: '+10% к здоровью героя.', max: 5 },
@@ -88,17 +91,57 @@
 
   function monster(id) { return data.monsters[id]; }
 
+  // ---------- Сила монстра: всегда по уровню героя ----------
+
+  // Здоровье героя в бою (с навыком "Усиленный организм")
+  function heroHp(run) {
+    var hp = AD.Engine.heroHp(run.level);
+    if (run.skills.HEAL) hp = Math.round(hp * (1 + 0.1 * run.skills.HEAL));
+    return hp;
+  }
+
+  // Монстр и страж - того же уровня, что герой сейчас
+  function monsterLevel(run) { return run.level; }
+
+  // Здоровье монстра: как у героя, сложность сдвигает от "Обычной"
+  function monsterHp(run) {
+    return Math.max(1, Math.round(heroHp(run) * (HP_BY_DIFFICULTY[run.difficulty] || 1)));
+  }
+
+  // Колода монстра: его собственные карты (из всех вариантов) повторами до размера колоды героя,
+  // с ростом уровня часть мест - карты его стихии, тем сильнее, чем выше уровень
+  function monsterDeck(run, m, seed) {
+    var p = data.progression, lv = monsterLevel(run), rng = { seed: seed | 0 };
+    var size = Math.min(p.deckMax, Math.max(p.deckMin, run.deck.length));
+    var own = [];
+    m.variants.forEach(function (v) { v.deck.forEach(function (id) { if (own.indexOf(id) < 0) own.push(id); }); });
+    var filler = playableCards(m.element).filter(function (c) { return own.indexOf(c.id) < 0; });
+    var nFill = filler.length ? Math.max(size - own.length * p.maxCopies, Math.min(Math.floor(size / 2), lv - 1)) : 0;
+    var deck = [];
+    for (var i = 0; deck.length < size - nFill && i < size * p.maxCopies; i++) {
+      var id = own[i % own.length];
+      if (copies(deck, id) < p.maxCopies || !filler.length) deck.push(id);
+    }
+    var weights = { cantrip: Math.max(0, 4 - lv), common: 6, rare: 2 + lv, unique: lv };
+    for (var guard = 0; deck.length < size && guard < 500; guard++) {
+      var c = pickWeighted(rng, filler, weights);
+      if (copies(deck, c.id) < 2) deck.push(c.id);
+    }
+    return deck;
+  }
+
   // Параметры боя для движка: игрок против монстра узла
   function battleSetup(run, nodeId) {
     var n = node(run, nodeId), m = monster(n.monster);
     var v = m.variants[run.difficulty] || m.variants[0];
+    var seed = run.seed + run.chapter * 101 + nodeId.length * 7 + run.stats.wins * 13 + run.stats.losses;
     return {
-      seed: run.seed + run.chapter * 101 + nodeId.length * 7 + run.stats.wins * 13 + run.stats.losses,
+      seed: seed,
       players: [
         { name: run.heroName, element: run.element, level: run.level, deck: run.deck.slice(), skills: run.skills,
           art: 'heroes/' + data.races[run.element].faction },
-        { name: m.name + (n.type === 'gate' ? ' (страж)' : ''), element: m.element, level: m.level, hp: v.hp,
-          deck: v.deck.slice(), skills: v.skills, passives: n.boss || [], art: monsterArt(m) }
+        { name: m.name + (n.type === 'gate' ? ' (страж)' : ''), element: m.element, level: monsterLevel(run), hp: monsterHp(run),
+          deck: monsterDeck(run, m, seed), skills: v.skills, passives: n.boss || [], art: monsterArt(m) }
       ]
     };
   }
@@ -155,13 +198,13 @@
   // Итог боя
   function battleResult(run, nodeId, won) {
     if (!won) { run.stats.losses++; return; }
-    var n = node(run, nodeId), m = monster(n.monster);
+    var n = node(run, nodeId), gain = xpForMonster(monsterLevel(run));
     run.stats.wins++;
-    run.xp += xpForMonster(m.level);
+    run.xp += gain;
     var before = run.level;
     run.level = levelFor(run.xp);
     run.pending = { type: 'reward', node: nodeId, cards: cardOffer(run, n.type === 'gate' ? 'rich' : 'battle'),
-      levelUp: run.level > before ? run.level : 0, xpGain: xpForMonster(m.level), gate: n.type === 'gate' };
+      levelUp: run.level > before ? run.level : 0, xpGain: gain, gate: n.type === 'gate' };
   }
 
   // Завершить ожидающее (награда/событие): choice - id карты, код навыка или null (пропустить)
@@ -221,6 +264,10 @@
     chapter: chapter,
     node: node,
     monster: monster,
+    heroHp: heroHp,
+    monsterLevel: monsterLevel,
+    monsterHp: monsterHp,
+    monsterDeck: monsterDeck,
     isAvailable: isAvailable,
     battleSetup: battleSetup,
     visit: visit,

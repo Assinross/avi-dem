@@ -9,17 +9,20 @@ module.exports = function (t) {
   var d = { cards: json('cards'), races: json('races'), monsters: json('monsters'), campaign: json('campaign'), progression: json('progression') };
   C.setData(d);
 
-  test('полная зачистка главы доводит героя ровно до уровня стража', function () {
-    var xp = 0;
-    d.campaign.chapters.forEach(function (ch) {
-      var gate = null;
-      ch.nodes.forEach(function (n) {
-        if (n.type === 'battle') xp += C.xpForMonster(d.monsters[n.monster].level);
-        if (n.type === 'gate') gate = d.monsters[n.monster];
+  test('монстры и страж равны герою: уровень, здоровье, размер колоды из своих карт', function () {
+    [1, 2, 4, 7].forEach(function (lv) {
+      var run = C.newRun('chaos', 1, 5);
+      run.level = lv; run.skills = { HEAL: 1 };
+      d.campaign.chapters.forEach(function (ch, i) {
+        run.chapter = i;
+        ch.nodes.filter(function (n) { return n.monster; }).forEach(function (n) {
+          var foe = C.battleSetup(run, n.id).players[1], me = C.battleSetup(run, n.id).players[0];
+          eq(foe.level, lv, n.monster + ': уровень');
+          eq(foe.hp, C.heroHp(run), n.monster + ': здоровье');
+          eq(foe.deck.length, me.deck.length, n.monster + ': размер колоды');
+          ok(d.monsters[n.monster].variants[0].deck.every(function (id) { return foe.deck.indexOf(id) >= 0; }), n.monster + ': свои карты');
+        });
       });
-      eq(xp, d.progression.expNeeded[gate.level - 1], ch.name + ': опыт к рубежу');
-      eq(C.levelFor(xp), gate.level, ch.name + ': уровень у рубежа');
-      xp += C.xpForMonster(gate.level);
     });
   });
 
