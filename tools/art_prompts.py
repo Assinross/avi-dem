@@ -196,7 +196,7 @@ FIRST = 'frontier_union'
 LEADERS = {
     'fracture_clans': ('leader_fracture_clans', 'Вождь Перелома'),
     'mutation_swarm': ('leader_mutation_swarm', 'Матриарх Гнезда'),
-    'astral_synklit': ('leader_astral_synklit', 'Архонт резонанса'),
+    'astral_synklit': ('leader_astral_synklit', 'Иерарх Синклита'),
     'frontier_union': ('leader_frontier_union', 'Маршал рубежа'),
 }
 

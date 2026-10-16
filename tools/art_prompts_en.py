@@ -219,11 +219,134 @@ CLANS_FIELD = ('Wide 16:9 panoramic landscape with no characters: a shattered wa
                'slag and machine wreckage, green crystal outcrops, ash sky in violet haze. The center of the image is calm '
                'and dark (cards will lie there), details and light are near the edges.')
 
+# ---------- Астральный Синклит ----------
+# Имена юнитов - протоссы StarCraft (решение пользователя), облик описан своими словами
+
+SYNKLIT = ('Ancient psionic alien civilization: tall slender symmetrical beings without mouths, glowing eyes, elegant '
+           'light armor of white alloy and ceramic with thin gold lines, blue energy blades and shields, floating '
+           'crystals. Palette silver-white, gold, deep navy blue, cyan glow.')
+
+SYNKLIT_LOOK_SPELL = ('Materials of an ancient psionic civilization: white alloy, gold inlays, floating blue crystals '
+                      'and geometric glyphs. Palette silver-white, gold, deep navy blue, cyan glow.')
+
+# Для машин и кораблей - без фигур существ, иначе генератор дорисовывает их в кадр
+SYNKLIT_LOOK_MACHINE = ('Technology of an ancient psionic alien civilization: white alloy and ceramic with thin gold lines, '
+                        'blue energy shields, floating crystals. Palette silver-white, gold, deep navy blue, cyan glow.')
+
+SYNKLIT_BACKDROP = ('Background: an astral sanctuary of floating pale platforms and crystals, geometric golden arches, '
+                    'dark blue starry sky with a nebula, dark, muted and slightly blurred so it does not compete with '
+                    'the subject.')
+
+SYNKLIT_LIGHT = 'Blue rim light accents of movement energy.'
+
+SYNKLIT_TRIBE = {
+    'spirit': 'a tall slender alien psionic warrior with no mouth and glowing blue eyes, elegant white and gold armor',
+    'octopus': 'a shadowy cloaked alien warrior, half translucent, dark violet armor, faint glowing eyes',
+    'jelly': 'a hovering alien psionic machine of white-gold alloy with a glowing blue crystal core',
+    'birdfolk': 'a sleek alien starfighter of curved gold and white hull plates with glowing blue energy vanes, no pilot visible',
+    'elemental': 'an alien combat machine of gold and white alloy with glowing blue crystal joints, clearly a machine, no organic parts',
+    'ray': 'a war machine walker: a rounded armored golden and white shell with a glowing blue energy core window in front, carried on four thin straight mechanical legs, clearly a machine, no head, no face, no organic parts',
+    'dragon': 'a colossal alien capital starship with a curved golden hull and glowing blue crystals',
+}
+
+SYNKLIT_WALL = {
+    'wlar': 'a translucent glowing blue force field made of hexagonal energy cells, a curved barrier wall hovering above the ground and blocking the way',
+    'wlbz': 'a tall glowing blue crystal pylon held in a golden frame, floating above a stone pedestal and radiating a wide shimmering blue energy field around it',
+    'wlwd': 'a defensive cannon tower with a wide golden and white base and a large glowing blue energy orb floating above it inside golden prongs, charging and firing a bright blue photon bolt',
+    'wlfc': 'a massive golden and white alien nexus temple structure with curved walls and arches, a huge glowing blue crystal hovering at its heart, energy rings around it',
+}
+
+# "=" в начале - описание целиком вместо породы
+SYNKLIT_CREATURE = {
+    'gbbr': '=a lithe alien psionic warrior with no mouth and glowing eyes, light dark-violet and gold armor, throwing a glowing crescent glaive, while a translucent glowing shade copy of itself runs ahead of it',
+    'gbin': 'crouching and firing a glowing blue energy bolt from a cannon mounted on its forearm',
+    'gbgn': 'hooded, wielding a single long curved blade of violet energy from its wrist, striking from the shadows',
+    'rvhl': '=a small hovering alien worker drone of white-gold alloy with a glowing blue crystal core and thin mechanical arms, gathering glowing blue ether crystals from the ground with an energy beam, clearly a machine, no face',
+    'sehl': '=a slender crescent-shaped alien flying craft of white-gold alloy with long thin curved wings and a glowing blue crystal core, firing a thin bright blue beam down at the ground, clearly a machine, no pilot',
+    'swhl': '=a large hovering alien energy machine of white-gold alloy shaped like an inverted crystal spire with a big glowing blue crystal core, several arcing energy tendrils of light reaching out and draining glowing ether from crystals around it, clearly a machine, no face',
+    'avsc': 'a light scout fighter with two forward-swept prongs',
+    'avas': 'with long swept-back wings like a bird of prey, diving at high speed, its tail half fading into shimmering light',
+    'avmk': 'with a round central body and two curved blade wings, firing a stream of small blue energy bolts forward',
+    'avel': '=a huge golden and white alien carrier starship with a long curved hull and glowing blue energy core, launching a swarm of many tiny fighter drones from its open hangar bays, the small fighters streaming out around it',
+    'shsp': 'heavy armor, glowing energy gauntlets, raising a fist and leading a line of warriors into battle behind him',
+    'wrsp': 'charging with twin glowing blue psionic blades extending from the wrists',
+    'clsp': 'in long flowing white and gold robes over light armor, hovering above the ground, crackling blue psionic lightning between its raised hands',
+    'wzsp': '=a towering being of pure blue-white psionic energy shaped like a glowing humanoid flame, a crackling electric aura and swirling lightning around it, a bright core of light in its chest, floating above the ground',
+    'erel': 'a heavy four-legged walker with twin cannons and a hexagonal blue barrier shield',
+    'frel': '=a long segmented heavy alien siege machine of gold and white alloy crawling on many small legs, launching small glowing explosive drones from a hatch on its back, clearly a machine, no head, no face, no organic parts',
+    'arel': '=a spindly four-legged alien walker of gold and white alloy with long thin legs and a small armored body, blinking forward in a flash of blue light, leaving a fading afterimage behind, firing energy, clearly a machine, no head, no face, no organic parts',
+    'wtel': '=a floating spherical alien robot of gold and white alloy hovering above the ground, charging a large crackling violet energy orb in front of it, clearly a machine, no head, no face, no organic parts',
+    'lmwa': 'a plasma cannon under the shell firing a glowing blue plasma ball',
+    'lmmn': 'with a protective golden energy halo, guarding',
+    'lmwd': 'with a golden crest and banners of light, commanding',
+    'lmwk': 'with a glowing crystal eye and floating psionic glyphs around it',
+    'bldg': 'with two long prongs in front, hovering above the battlefield and casting down a shimmering blue stasis field that freezes the ground and rocks below in blue crystal',
+    'budg': '=a colossal alien warship with a long thin crescent-shaped golden hull and a glowing blue crystal at the center of the crescent, firing a huge crackling sphere of blue energy far into the sky',
+    'grdg': '=a large disc-shaped alien warship of golden and white alloy with a big glowing violet prism crystal at its front, focusing a searing violet prismatic beam down onto a target',
+    'rddg': '=an enormous round alien mothership of gold and white alloy, a massive disc with rings of glowing blue lights and a huge crystal at its center, a swirling vortex of dark energy beneath it pulling debris upward',
+}
+
+SYNKLIT_SCENE = {
+    'hoam': 'a translucent golden dome of slowed time over the ground, frozen dust and clock-like rings of light',
+    'lsds': 'a large translucent blue dome shield projected from a small golden emitter',
+    'scsk': 'plates of blue crystal scales forming over a golden armor plate',
+    'shfr': 'a hexagonal blue energy shield glowing brightly, recharging from a small golden battery pylon beside it with a beam of blue light',
+    'spwr': 'a golden crystal pulsing with fast spinning rings of blue light, time accelerating around it',
+    'tgsk': 'a golden armored gauntlet wrapped in a thin shimmering layer of blue plasma energy, a faint bubble of plasma shield around it',
+    'wtlk': 'many glowing psionic cords of blue light converging from all sides and intertwining into one bright knot of light above a golden crystal, a symbol of a shared mind',
+    'ailk': 'a stream of cyan life energy flowing into a golden crystal vessel',
+    'cnar': 'a glowing web of violet energy strands stretched across the sky between floating golden crystal anchors, crackling and trapping falling debris',
+    'copl': 'a golden crystal obelisk with glowing circuit lines of cyan light running over its surface and down into a ring of shield emitters on the ground, a pulse of energy flowing through the circuit',
+    'flod': 'a blue beam of gravity shining down from above and lifting rocks and debris off the ground into the air, everything floating weightless in the beam',
+    'sght': 'a narrow white-gold purifying beam burning through a glowing glyph circle',
+    'shsk': 'a heavy golden armored carapace plate with blue glowing lines, covered by a thick hexagonal blue energy barrier, a projectile bursting harmlessly against it',
+    'stat': 'a golden armored gauntlet with a short energy blade striking forward with a burst of blue energy, glowing upgrade glyphs floating around it',
+    'stsi': 'a large sphere of blue stasis energy hanging in the air, inside it rocks, crystals and sparks frozen motionless in midair, faint geometric glyphs on its surface',
+    'mght': 'a glowing golden psionic crest emblem radiating power, waves of blue psionic energy surging outward from it, floating above an altar',
+    'psbr': 'a long curved blade of glowing violet-blue psionic energy extending from a golden gauntlet, the air around the blade bending and warping',
+    'sptr': 'a dim golden crystal pylon flickering out of power on a pedestal, its blue glow fading, ether sparks dying around it, cracks of strain in the crystal',
+    'erbn': 'a small glowing golden ward device on the ground releasing a blue stasis trap of crystal chains that lock together in a ring around it',
+    'chcm': 'a golden crown of light floating in the air, glowing psionic strings of control descending from it like puppet strings into the dark',
+    'awak': 'a glowing all-seeing eye glyph of golden light opening in the sky and casting a wide cone of revealing light down that uncovers hidden glowing runes on the ground',
+    'bann': 'a glowing blue memory crystal cracking apart under waves of psionic static interference, glowing fragments and distorted glitchy light drifting away',
+    'enfr': 'several round blue warp portals of light flashing open on the ground in a row, beams of light rising from each, matter beginning to materialize inside them as glowing silhouettes of crystal',
+    'lsus': 'a small glowing crystal dissolving into streams of blue light particles that are pulled back up into a small swirling recall vortex above it',
+    'unsm': 'a tall pillar of blue recall light beaming up into the sky from a glowing circle on the ground, matter dissolving into particles and drifting upward inside it',
+    'blnc': 'a golden alien gas extractor building built over a glowing green gas geyser vent, the structure with curved golden plates and blue crystal nodes, green gas being drawn up into it',
+    'clnp': 'a small glowing violet glyph circle in the air breaking apart into sharp shards, dispersed by a ripple of blue psionic energy',
+    'curs': 'a swirling dark violet maelstrom vortex of psionic energy spinning in the sky, sucking in glowing fragments and crystals',
+    'decn': 'an expanding nova ring of white-gold purifying light bursting outward from a bright center, shattering many floating glowing glyph circles into fragments',
+    'fogg': 'a wide shimmering dome of slowed time spreading over the battlefield, inside it sparks, dust and energy bolts frozen and slowed to a halt, faint golden clock-like rings on its surface',
+    'fury': 'a blazing golden psionic flare of righteous fury bursting from a cracked blue crystal, golden fire and blue lightning erupting outward in a furious burst',
+    'grun': 'a huge wave of blue recall light sweeping across the whole battlefield, everything in its path dissolving into countless rising blue particles pulled up into the sky',
+    'icst': 'an expanding ring of blue stasis energy spreading low across the ground from a glowing center, freezing the air and debris into blue crystal as it passes',
+    'mdbl': 'a psionic explosion bursting from a glowing crystal core, rings of blue energy',
+    'amns': 'a crystal shattering into blank fading fragments in a void',
+    'frwn': 'a stream of glowing golden glyphs flowing from an ancient floating archive crystal',
+    'mals': 'dark whispering violet smoke coiling around a cracked golden tablet',
+    'fdbk': 'a blue psionic shield reflecting a pulse of energy back to its source',
+    'hung': 'blue psionic lightning recoiling from a cracked crystal back into itself',
+    'just': 'a large golden gate arch with a shimmering blue warp field inside',
+    'rvhg': 'a psionic storm of blue lightning raining down over the battlefield',
+    'crhg': 'searing golden beams of light lancing down from the sky in parallel lines',
+}
+
+SYNKLIT_LEADER = ('Square 1:1 close-up portrait, head and shoulders: an original ancient alien hierarch with no mouth, '
+                  'elongated head with long tendrils hanging behind, glowing blue eyes, ornate white and gold ceremonial '
+                  'armor with a blue crystal on the chest, a star sanctuary behind.')
+
+SYNKLIT_FIELD = ('Wide 16:9 panoramic landscape with no characters: an astral sanctuary of floating pale platforms and '
+                 'crystals, geometric golden arches, dark blue starry sky with a nebula. The center of the image is calm '
+                 'and dark (cards will lie there), details and light are near the edges.')
+
 # Набор описаний фракции: стиль, фон, свет, породы, стены, уточнения существ, сюжеты заклинаний
 PACKS = {
     'frontier_union': dict(look=UNION, backdrop=BACKDROP, light=LIGHT, tribe=TRIBE, wall=WALL, creature=CREATURE, scene=SCENE),
     'fracture_clans': dict(look=CLANS, look_spell=CLANS_LOOK_SPELL, backdrop=CLANS_BACKDROP, light=CLANS_LIGHT, tribe=CLANS_TRIBE, wall=CLANS_WALL,
                            creature=CLANS_CREATURE, scene=CLANS_SCENE),
+    'astral_synklit': dict(look=SYNKLIT, look_spell=SYNKLIT_LOOK_SPELL, backdrop=SYNKLIT_BACKDROP, light=SYNKLIT_LIGHT,
+                           tribe=SYNKLIT_TRIBE, wall=SYNKLIT_WALL, creature=SYNKLIT_CREATURE, scene=SYNKLIT_SCENE,
+                           look_machine=SYNKLIT_LOOK_MACHINE, machines=('ray', 'elemental', 'jelly', 'birdfolk', 'dragon', 'wall')),
 }
 
 # Карты глав кампании (фон экрана карты), по порядку глав
@@ -248,7 +371,10 @@ def card(c, pk):
             size = 'huge, filling most of the frame' if c['cost'] >= 7 else ('large' if c['cost'] >= 4 else 'small')
             cues = [KEYWORD[k.split(':')[0]] for k in c.get('keywords', []) if k.split(':')[0] in KEYWORD]
             note = pk['creature'].get(c['id'], '').rstrip(',')
-            subject = pk['tribe'][c['race']] + (', ' + note if note else '') + ', ' + size
+            if note.startswith('='):
+                subject = note[1:] + ', ' + size
+            else:
+                subject = pk['tribe'][c['race']] + (', ' + note if note else '') + ', ' + size
             if cues:
                 subject += ', ' + ', '.join(cues)
             subject += ('. Shot: the creature in action in its environment (running, attacking, flying), not posing; '
@@ -263,6 +389,8 @@ def card(c, pk):
         fmt = 'Vertical 3:4 portrait format.'
     # Сюжет первым: генератор сильнее всего слушается начала описания
     look = pk['look'] if c['type'] == 'creature' else pk.get('look_spell', pk['look'])
+    if c.get('race') in pk.get('machines', ()):
+        look = pk['look_machine']
     return ' '.join([subject[0].upper() + subject[1:] + '.', STYLE, look, pk['backdrop'], pk['light'], fmt])
 
 
@@ -283,6 +411,10 @@ def main():
             x['prompt_en'] = ' '.join([STYLE, CLANS, CLANS_LEADER, CLANS_BACKDROP])
         elif fid == 'bg_fracture_clans':
             x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), CLANS, CLANS_FIELD])
+        elif fid == 'leader_astral_synklit':
+            x['prompt_en'] = ' '.join([STYLE, SYNKLIT, SYNKLIT_LEADER, SYNKLIT_BACKDROP])
+        elif fid == 'bg_astral_synklit':
+            x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), SYNKLIT, SYNKLIT_FIELD])
         elif cards.get(fid, {}).get('faction') in PACKS:
             x['prompt_en'] = card(cards[fid], PACKS[cards[fid]['faction']])
         else:
