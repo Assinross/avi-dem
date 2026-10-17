@@ -363,7 +363,7 @@ SWARM_TRIBE = {
     'hornet': 'a fast alien flying beast with crimson chitin, veined translucent wings and a long drill-like stinger',
     'tick': 'a squat armored alien tick-like beast with a crimson chitin shell and segmented legs',
     'tree': 'a living alien growth of chitin and flesh shaped like a twisted tree, rooted in the slime creep',
-    'snake': 'a serpentine alien crawler with crimson chitin plates and bone blades along its body',
+    'snake': 'a long legless snake-like alien serpent, no legs, with crimson chitin plates and a row of bone blades along its spine',
     'eye': 'a floating alien organism with one huge glowing violet eye and hanging tentacles',
     'bee': 'a small flying alien beast with crimson chitin, a stinger and translucent veined wings',
     'mantis': 'a tall predatory alien beast with sickle-shaped bone forelimbs and crimson chitin',
