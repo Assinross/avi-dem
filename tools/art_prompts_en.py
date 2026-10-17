@@ -347,7 +347,8 @@ SWARM = ('Predatory alien hive swarm, many beasts of one organism: matte crimson
 
 # Для заклинаний и чар - без тварей в описании стиля, иначе генератор рисует их в кадре
 SWARM_LOOK_SPELL = ('Organic materials of an alien hive: matte crimson chitin, bone, wet membranes, living slime creep, '
-                    'violet bioluminescent glow. Palette dark crimson, maroon, violet glow.')
+                    'violet bioluminescent glow. Palette dark crimson, maroon, violet glow. Only objects, plants and '
+                    'energy effects: no beasts, no insects, no animals, no eyes, no teeth, no faces.')
 
 SWARM_BACKDROP = ('Background: an organic hive nest with walls of living tissue and chitin, wet membranes, spores in the '
                   'air, crimson gloom with violet bioluminescence, dark, muted and slightly blurred so it does not '
@@ -400,26 +401,26 @@ SWARM_CREATURE = {
 }
 
 SWARM_SCENE = {
-    'spwb': 'a web of glowing green pulsing veins spreading across the organic ground, absorbing glowing motes rising from empty chitin shells',
+    'spwb': 'a web of glowing green pulsing veins spreading across the organic ground, absorbing glowing motes rising from the ground',
     'anfr': 'a dense wall of ancient twisted organic growths with huge bone thorns and fleshy vines blocking the path',
     'dnfr': 'a thick tangle of dark red fleshy vines and thorny stalks forming a dense thicket',
     'drfr': 'a dark thicket of black-violet thorny tendrils with a faint purple glow, in shadow',
     'cmbn': 'a pulsing heart-like organ on an altar of bone, bright crimson energy pouring out of it in a glowing stream',
-    'hast': 'a sharp curved bone claw with green speed streaks trailing behind it, motion blur',
+    'hast': 'a sharp curved bone blade with green speed streaks trailing behind it, motion blur',
     'lshe': 'a small bud of living tissue opening and releasing glowing green healing motes',
     'mntx': 'a fleshy pod plant with swelling glowing violet ether bulbs, streams of ether flowing into it',
     'shcl': 'a set of sharp curved bone claws of crimson chitin, a bright glint on the edges',
-    'spba': 'a translucent venom gland sac full of glowing green poison, drops dripping from a bone stinger',
+    'spba': 'a translucent venom gland sac full of glowing green poison, drops dripping from a thin bone needle',
     'splk': 'a fleshy feeding tube organ sucking glowing violet ether out of a crystal',
     'ftds': 'withered rotting organic tissue covered in dark spots, a sickly grey-green miasma rising from it',
     'mnth': 'sharp bone thorns tipped with violet crystal growing out of a glowing ether crystal, crackling',
-    'sacr': 'a pool of glowing acid dissolving an empty chitin shell into rising violet ether vapor',
-    'thif': 'a long bony tendril snatching glowing violet orbs out of the air and pulling them away into darkness',
+    'sacr': 'a pool of glowing acid dissolving a chunk of crimson chitin into rising violet ether vapor',
+    'thif': 'glowing violet orbs of memory being pulled out of the air into a dark swirling hole in a fleshy wall',
     'upgd': 'a glowing crimson chitin cocoon pulsing with green light, cracks of light across it, transformation',
     'domn': 'a tall crimson chitin spire of bone like a crown, radiating violet waves of will over the nest',
     'envm': 'a cloud of green poison mist drifting from bubbling toxic pods',
     'enwo': 'overlapping thick armor plates of glossy crimson chitin layered like scales, a glow at the seams',
-    'stwo': 'a huge bone scythe claw glowing with crimson energy, a power aura around it',
+    'stwo': 'a huge curved bone blade glowing with crimson energy, a power aura around it',
     'vtly': 'a pulsing mass of living tissue knitting itself back together, glowing green veins healing a wound',
     'mndp': 'a single glowing violet drop of ether falling from a fleshy stalk into a small pool',
     'mndw': 'a fleshy pod bursting open with a large splash of glowing violet ether',
@@ -432,7 +433,7 @@ SWARM_SCENE = {
     'gldt': 'a thick drifting cloud of glowing pink-violet spores floating low over the nest, a sleepy haze',
     'trad': 'bone balance scales, one bowl holding a glowing green heart-like organ, the other a cracked chitin skull',
     'criv': 'corrosive glowing green acid vines wrapping around a stone wall and dissolving it, smoke rising',
-    'enlh': 'a web of glowing violet neural threads linking many cocoons into one shared mind, pulsing',
+    'enlh': 'a web of glowing violet neural threads linking many glowing pods into one shared mind, pulsing',
     'hrcn': 'a violent hurricane vortex of wind and spores in a crimson sky, debris flying',
     'snrg': 'a small hive node: a pulsing fleshy bulb rooted in the ground, glowing violet ether veins spreading from it',
     'aslt': 'a charging wave of crimson energy with bone spikes erupting from the ground along it',
