@@ -339,6 +339,120 @@ SYNKLIT_FIELD = ('Wide 16:9 panoramic landscape with no characters: an astral sa
                  'crystals, geometric golden arches, dark blue starry sky with a nebula. The center of the image is calm '
                  'and dark (cards will lie there), details and light are near the edges.')
 
+# ---------- Рой мутаций ----------
+
+SWARM = ('Predatory alien hive swarm, many beasts of one organism: matte crimson chitin, bone scythes and claws, many '
+         'small eyes, wet membranes, living slime creep covering the ground, cocoons and larvae. Palette dark crimson, '
+         'maroon, violet bioluminescent glow.')
+
+# Для заклинаний и чар - без тварей в описании стиля, иначе генератор рисует их в кадре
+SWARM_LOOK_SPELL = ('Organic materials of an alien hive: matte crimson chitin, bone, wet membranes, living slime creep, '
+                    'violet bioluminescent glow. Palette dark crimson, maroon, violet glow.')
+
+SWARM_BACKDROP = ('Background: an organic hive nest with walls of living tissue and chitin, wet membranes, spores in the '
+                  'air, crimson gloom with violet bioluminescence, dark, muted and slightly blurred so it does not '
+                  'compete with the subject.')
+
+SWARM_LIGHT = 'Green rim light accents of life energy.'
+
+SWARM_KEYWORD = dict(KEYWORD, regen='glowing green tissue regrowing over its wounds')
+
+SWARM_TRIBE = {
+    'mushroom': 'a rooted alien fungal organism, a fleshy crimson mushroom-like body with membranes and glowing violet spores',
+    'hornet': 'a fast alien flying beast with crimson chitin, veined translucent wings and a long drill-like stinger',
+    'tick': 'a squat armored alien tick-like beast with a crimson chitin shell and segmented legs',
+    'tree': 'a living alien growth of chitin and flesh shaped like a twisted tree, rooted in the slime creep',
+    'snake': 'a serpentine alien crawler with crimson chitin plates and bone blades along its body',
+    'eye': 'a floating alien organism with one huge glowing violet eye and hanging tentacles',
+    'bee': 'a small flying alien beast with crimson chitin, a stinger and translucent veined wings',
+    'mantis': 'a tall predatory alien beast with sickle-shaped bone forelimbs and crimson chitin',
+}
+
+SWARM_CREATURE = {
+    'spfg': 'spitting a glob of glowing green acid from an opening at its top',
+    'cafg': 'with a toothed maw opening in its cap, snapping at prey',
+    'gifg': 'with a tall wide cap and many glowing spore sacs, releasing a cloud of spores',
+    'grfg': 'colossal, its cap towering like a dome over the hive, rivers of glowing spores falling from it',
+    'maho': 'diving down and drilling forward with its stinger',
+    'myho': 'with violet glowing patterns on its wings and a violet psionic glow around its drill stinger',
+    'tiwr': 'with two bone blades on its forelegs, charging forward',
+    'tiqn': 'with a swollen glowing egg sac on its back, small larvae around it',
+    'tiwk': 'carrying a lump of glowing violet biomass in its mandibles',
+    'moti': 'huge and bloated, its shell covered with egg pods, small ticks hatching around it',
+    'tnsa': 'young and thin, a few small branches of bone and flesh',
+    'tant': 'with gnarled bone branches and fleshy bark',
+    'grtn': 'with a thick trunk of chitin plates and bone branches swaying like claws',
+    'antn': 'ancient and massive, pulling its roots out of the ground and smashing forward',
+    'lasn': 'bursting out of dark glowing water',
+    'grsn': 'striking from tall crimson alien grass',
+    'trsn': 'coiled around a twisted organic branch, striking down',
+    'swsn': 'rising out of a bubbling green bog',
+    'bewk': 'carrying a glowing violet pollen sac',
+    'beqn': 'with a long elongated glowing abdomen and a bone crest',
+    'bewr': 'with a large curved stinger and sharp mandibles, attacking',
+    'mobe': 'large, hovering over a cluster of cocoons, guarding them',
+    'bhwr': 'with bone spikes around its eye, firing a violet ray from the eye',
+    'bhmo': 'enormous, its body covered with many smaller glowing eyes, tentacles spread wide',
+    'behd': 'its eye beam dissolving a glowing magic glyph circle in the air',
+    'mnts': 'slashing with its sickles, glowing green strands of life drawn from its prey into its body',
+    'mtsc': 'with a glowing violet crest on its elongated head, floating glyphs of light around it',
+    'mtpt': 'colossal, with a crown of bone spikes, towering over the hive',
+}
+
+SWARM_SCENE = {
+    'spwb': 'a web of glowing green pulsing veins spreading across the organic ground, absorbing glowing motes rising from empty chitin shells',
+    'anfr': 'a dense wall of ancient twisted organic growths with huge bone thorns and fleshy vines blocking the path',
+    'dnfr': 'a thick tangle of dark red fleshy vines and thorny stalks forming a dense thicket',
+    'drfr': 'a dark thicket of black-violet thorny tendrils with a faint purple glow, in shadow',
+    'cmbn': 'a pulsing heart-like organ on an altar of bone, bright crimson energy pouring out of it in a glowing stream',
+    'hast': 'a sharp curved bone claw with green speed streaks trailing behind it, motion blur',
+    'lshe': 'a small bud of living tissue opening and releasing glowing green healing motes',
+    'mntx': 'a fleshy pod plant with swelling glowing violet ether bulbs, streams of ether flowing into it',
+    'shcl': 'a set of sharp curved bone claws of crimson chitin, a bright glint on the edges',
+    'spba': 'a translucent venom gland sac full of glowing green poison, drops dripping from a bone stinger',
+    'splk': 'a fleshy feeding tube organ sucking glowing violet ether out of a crystal',
+    'ftds': 'withered rotting organic tissue covered in dark spots, a sickly grey-green miasma rising from it',
+    'mnth': 'sharp bone thorns tipped with violet crystal growing out of a glowing ether crystal, crackling',
+    'sacr': 'a pool of glowing acid dissolving an empty chitin shell into rising violet ether vapor',
+    'thif': 'a long bony tendril snatching glowing violet orbs out of the air and pulling them away into darkness',
+    'upgd': 'a glowing crimson chitin cocoon pulsing with green light, cracks of light across it, transformation',
+    'domn': 'a tall crimson chitin spire of bone like a crown, radiating violet waves of will over the nest',
+    'envm': 'a cloud of green poison mist drifting from bubbling toxic pods',
+    'enwo': 'overlapping thick armor plates of glossy crimson chitin layered like scales, a glow at the seams',
+    'stwo': 'a huge bone scythe claw glowing with crimson energy, a power aura around it',
+    'vtly': 'a pulsing mass of living tissue knitting itself back together, glowing green veins healing a wound',
+    'mndp': 'a single glowing violet drop of ether falling from a fleshy stalk into a small pool',
+    'mndw': 'a fleshy pod bursting open with a large splash of glowing violet ether',
+    'mntp': 'a spring of glowing violet ether welling up from an organic vent in the ground',
+    'symb': 'two organic vines, one red and one green, intertwined around each other and sharing a glowing pulse',
+    'blss': 'an explosive burst of growth, fleshy tendrils and bone spines sprouting rapidly out of the ground in green light',
+    'canv': 'a bone sacrificial altar with a burst of crimson energy erupting upward in a spear of light',
+    'chnl': 'two glowing streams, red and violet, exchanging between a fleshy organ and an ether crystal',
+    'ettd': 'a crimson flare consuming a glowing violet glyph circle in the air and burning it away',
+    'gldt': 'a thick drifting cloud of glowing pink-violet spores floating low over the nest, a sleepy haze',
+    'trad': 'bone balance scales, one bowl holding a glowing green heart-like organ, the other a cracked chitin skull',
+    'criv': 'corrosive glowing green acid vines wrapping around a stone wall and dissolving it, smoke rising',
+    'enlh': 'a web of glowing violet neural threads linking many cocoons into one shared mind, pulsing',
+    'hrcn': 'a violent hurricane vortex of wind and spores in a crimson sky, debris flying',
+    'snrg': 'a small hive node: a pulsing fleshy bulb rooted in the ground, glowing violet ether veins spreading from it',
+    'aslt': 'a charging wave of crimson energy with bone spikes erupting from the ground along it',
+    'heal': 'a large flower of living tissue opening and bathing everything in glowing green light',
+    'sncr': 'two pulsing fleshy hive bulbs rooted in the ground, joined by thick glowing violet ether veins',
+    'clsn': 'a cleansing wave of green-white light sweeping across the ground, dissolving floating glowing glyph circles',
+    'twst': 'a tornado of crimson wind and flying thorns touching down on the ground',
+    'frnt': 'a massive eruption of crimson bone spikes and acid across the whole battlefield',
+    'snhg': 'a giant hive node organ tower of flesh and chitin, a web of glowing violet ether veins spreading wide from it',
+    'grhe': 'a huge radiant flower of living tissue, a tall pillar of green healing light rising from it',
+}
+
+SWARM_LEADER = ('Square 1:1 close-up portrait, head and shoulders: an original alien hive matriarch, non-human insectoid '
+                'head with several small glowing violet eyes, elongated silhouette, dark crimson chitin, a crown of '
+                'bone plates, a glowing violet organ in the chest.')
+
+SWARM_FIELD = ('Wide 16:9 panoramic landscape with no characters: an organic hive nest with walls of living tissue and '
+               'chitin, wet membranes, spores in the air, crimson gloom with violet bioluminescence. The center of the '
+               'image is calm and dark (cards will lie there), details and light are near the edges.')
+
 # Набор описаний фракции: стиль, фон, свет, породы, стены, уточнения существ, сюжеты заклинаний
 PACKS = {
     'frontier_union': dict(look=UNION, backdrop=BACKDROP, light=LIGHT, tribe=TRIBE, wall=WALL, creature=CREATURE, scene=SCENE),
@@ -347,6 +461,8 @@ PACKS = {
     'astral_synklit': dict(look=SYNKLIT, look_spell=SYNKLIT_LOOK_SPELL, backdrop=SYNKLIT_BACKDROP, light=SYNKLIT_LIGHT,
                            tribe=SYNKLIT_TRIBE, wall=SYNKLIT_WALL, creature=SYNKLIT_CREATURE, scene=SYNKLIT_SCENE,
                            look_machine=SYNKLIT_LOOK_MACHINE, machines=('ray', 'elemental', 'jelly', 'birdfolk', 'dragon', 'wall')),
+    'mutation_swarm': dict(look=SWARM, look_spell=SWARM_LOOK_SPELL, backdrop=SWARM_BACKDROP, light=SWARM_LIGHT,
+                           tribe=SWARM_TRIBE, wall={}, creature=SWARM_CREATURE, scene=SWARM_SCENE, keyword=SWARM_KEYWORD),
 }
 
 # Карты глав кампании (фон экрана карты), по порядку глав
@@ -369,7 +485,8 @@ def card(c, pk):
             subject = pk['wall'][c['id']] + ', seen in perspective on the battlefield'
         else:
             size = 'huge, filling most of the frame' if c['cost'] >= 7 else ('large' if c['cost'] >= 4 else 'small')
-            cues = [KEYWORD[k.split(':')[0]] for k in c.get('keywords', []) if k.split(':')[0] in KEYWORD]
+            kw = pk.get('keyword', KEYWORD)
+            cues = [kw[k.split(':')[0]] for k in c.get('keywords', []) if k.split(':')[0] in kw]
             note = pk['creature'].get(c['id'], '').rstrip(',')
             if note.startswith('='):
                 subject = note[1:] + ', ' + size
@@ -415,6 +532,10 @@ def main():
             x['prompt_en'] = ' '.join([STYLE, SYNKLIT, SYNKLIT_LEADER, SYNKLIT_BACKDROP])
         elif fid == 'bg_astral_synklit':
             x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), SYNKLIT, SYNKLIT_FIELD])
+        elif fid == 'leader_mutation_swarm':
+            x['prompt_en'] = ' '.join([STYLE, SWARM, SWARM_LEADER, SWARM_BACKDROP])
+        elif fid == 'bg_mutation_swarm':
+            x['prompt_en'] = ' '.join([STYLE.replace('clear readable silhouette, ', ''), SWARM_LOOK_SPELL, SWARM_FIELD])
         elif cards.get(fid, {}).get('faction') in PACKS:
             x['prompt_en'] = card(cards[fid], PACKS[cards[fid]['faction']])
         else:
